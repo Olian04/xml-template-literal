@@ -1,0 +1,51 @@
+{
+  "name": "xml-template-literal",
+  "version": "0.1.0",
+  "description": "A template literal tag function for parsing xml.",
+  "browser": "cdn/xml-template-literal.mjs",
+  "main": "dist/api.js",
+  "types": "dist/api.d.ts",
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "test": "mocha",
+    "build": "npm run build:node && npm run build:web",
+    "build:node": "rimraf ./dist && tsc",
+    "build:web": "rimraf ./cdn && rollup --config"
+  },
+  "keywords": [
+    "xml",
+    "html",
+    "parser",
+    "AST"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Olian04/xml-template-literal.git"
+  },
+  "author": "Olian04",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Olian04/xml-template-literal/issues"
+  },
+  "homepage": "https://github.com/Olian04/xml-template-literal#readme",
+  "devDependencies": {
+    "@types/chai": "^4.3.4",
+    "@types/es6-promise": "3.3.0",
+    "@types/mocha": "^10.0.1",
+    "@types/rollup-plugin-commonjs": "^9.3.1",
+    "@types/rollup-plugin-node-resolve": "^4.1.0",
+    "@types/typescript": "^2.0.0",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "rimraf": "^4.1.2",
+    "rollup": "3.12.1",
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-terser": "^0.4.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.5.0",
+    "typescript": "^4.9.5",
+    "http-server": "^14.1.1"
+  }
+}
