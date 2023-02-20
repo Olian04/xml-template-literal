@@ -129,7 +129,6 @@ export const lexer = <T>(
   tokenizer: Generator<Token<T>, null, unknown>
 ): AstRoot<T> => {
   let children: AstChild<T>[] = [];
-  let {} = peek(tokenizer);
   while (true) {
     const [peeked, newTokenize] = peek(tokenizer);
     if (peeked.done) {
