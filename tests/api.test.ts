@@ -16,7 +16,7 @@ describe('api', () => {
         >
         ${B}
       </someTag>
-      <greet name="World" />
+      <greet name="World"></greet>
     `;
 
     expect(typeof out).to.equal('object');

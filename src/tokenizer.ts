@@ -1,35 +1,9 @@
+import type { SyntaxToken } from './types/SyntaxToken';
+import type { Token } from './types/Token';
+
 import { UnexpectedToken } from './errors/UnexpectedToken';
 
 const isStaticSegment = (v: number) => v % 2 === 0;
-
-type DynamicToken<T> = {
-  kind: 'dynamic';
-  position: {
-    row: number;
-    col: number;
-  };
-  value: T;
-};
-
-type SyntaxToken = {
-  kind: 'syntax';
-  type: '<' | '>' | '/' | '=' | '"';
-  position: {
-    row: number;
-    col: number;
-  };
-};
-
-type SymbolToken = {
-  kind: 'symbol';
-  value: string;
-  position: {
-    row: number;
-    col: number;
-  };
-};
-
-type Token<T> = DynamicToken<T> | SyntaxToken | SymbolToken;
 
 export function* tokenizer<T>(segments: {
   static: string[];
@@ -54,7 +28,7 @@ export function* tokenizer<T>(segments: {
         if (maybeSyntax) {
           yield {
             kind: 'syntax',
-            type: maybeSyntax[0] as any,
+            value: maybeSyntax[0] as SyntaxToken['value'],
             position: {
               row: currentRow,
               col: currentCol,
@@ -65,9 +39,7 @@ export function* tokenizer<T>(segments: {
           continue;
         }
 
-        const maybeSymbol = /^\S+(?<=[^<>/="])/.exec(
-          staticSegment.substring(index)
-        );
+        const maybeSymbol = /^[^<>/=" ]+/.exec(staticSegment.substring(index));
         if (maybeSymbol) {
           yield {
             kind: 'symbol',
@@ -85,7 +57,7 @@ export function* tokenizer<T>(segments: {
         const maybeNewline = /^\n+$/.exec(staticSegment.substring(index));
         if (maybeNewline) {
           currentCol = 0;
-          currentRow += 1;
+          currentRow += maybeNewline[0].length;
         }
 
         throw new UnexpectedToken(

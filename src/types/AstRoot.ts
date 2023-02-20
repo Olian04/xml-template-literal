@@ -1,6 +1,6 @@
-import { AstChild } from './AstChild';
+import type { AstChild } from './AstChild';
 
-export type AstRoot = {
+export type AstRoot<T> = {
   type: 'root';
-  children: AstChild[];
+  children: AstChild<T>[];
 };

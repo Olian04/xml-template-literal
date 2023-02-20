@@ -1,17 +1,17 @@
+import { lexer } from './lexer';
+import { optimizer } from './optimizer';
+import { tokenizer } from './tokenizer';
 import type { AstRoot } from './types/AstRoot';
-import { parseChild } from './parsers/parseChild';
 
 export const xml = <T>(
   staticSegments: TemplateStringsArray,
   ...dynamicSegments: T[]
-): AstRoot => {
-  return {
-    type: 'root',
-    children: [
-      parseChild({
+): AstRoot<T> =>
+  lexer(
+    optimizer(
+      tokenizer({
         static: [...staticSegments],
-        dynamic: [...dynamicSegments],
-      }),
-    ],
-  };
-};
+        dynamic: dynamicSegments,
+      })
+    )
+  );

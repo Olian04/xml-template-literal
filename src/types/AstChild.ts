@@ -1,4 +1,4 @@
-import { AstAttribute } from './AstAttribute';
+import type { AstAttribute } from './AstAttribute';
 
 export type AstNodeChild<T = unknown> = {
   type: 'child';
@@ -9,7 +9,7 @@ export type AstNodeChild<T = unknown> = {
 
 export type AstValueChild<T = unknown> = {
   type: 'child';
-  value: T;
+  value: T | string;
 };
 
 export type AstChild<T = unknown> = AstNodeChild<T> | AstValueChild<T>;
