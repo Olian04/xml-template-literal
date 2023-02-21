@@ -33,7 +33,18 @@ describe('lexer', () => {
     );
     expect(ast).to.deep.equal({
       type: 'root',
-      children: [],
+      children: [
+        {
+          type: 'child',
+          kind: 'node',
+          tag: 'someTag',
+          children: [],
+          attributes: [
+            { key: 'property', value: ['value'] },
+            { key: 'prop', value: [A] },
+          ],
+        },
+      ],
     });
   });
 });

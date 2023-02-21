@@ -15,7 +15,6 @@ const buildAttribute = <T>(
     value: [],
   };
   let token: IteratorResult<Token<T>> = tokenizer.next();
-  token = tokenizer.next();
   if (token.done) {
     throw new UnexpectedEOF();
   }
@@ -45,9 +44,16 @@ const buildChild = <T>(
   if (token.done) {
     throw new UnexpectedEOF();
   }
-  if (token.value.kind === 'value' || token.value.kind === 'dynamic') {
+  if (token.value.kind === 'dynamic') {
     return {
       type: 'child',
+      kind: 'value',
+      value: token.value.value,
+    };
+  } else if (token.value.kind === 'value') {
+    return {
+      type: 'child',
+      kind: 'text',
       value: token.value.value,
     };
   }
@@ -106,6 +112,7 @@ const buildChild = <T>(
   }
   return {
     type: 'child',
+    kind: 'node',
     tag,
     attributes,
     children,

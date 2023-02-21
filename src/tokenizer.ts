@@ -58,12 +58,14 @@ export function* tokenizer<T>(segments: {
         if (maybeNewline) {
           currentCol = 0;
           currentRow += maybeNewline[0].length;
+          continue;
         }
 
         throw new UnexpectedToken(
           `"${staticSegment.charAt(index)}" at ${currentRow}:${currentCol}`
         );
       }
+      staticIndex += 1;
     } else {
       yield {
         kind: 'dynamic',

@@ -79,4 +79,34 @@ describe('optimizer', () => {
       '>',
     ]);
   });
+
+  it('should correctly optimize a token stream dynamic and static parts', () => {
+    const A = { foo: 0 };
+    const tokRef = optimizer(
+      tokenizer({
+        dynamic: [A],
+        static: ['<someTag property="value" prop="', '"></someTag>'],
+      })
+    );
+
+    expect([...tokRef].map((v: any) => v.type || v.value)).to.deep.equal([
+      '<',
+      'someTag',
+      'property',
+      '=',
+      '"',
+      'value',
+      '"',
+      'prop',
+      '=',
+      '"',
+      A,
+      '"',
+      '>',
+      '<',
+      '/',
+      'someTag',
+      '>',
+    ]);
+  });
 });
