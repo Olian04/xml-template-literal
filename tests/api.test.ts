@@ -14,6 +14,7 @@ describe('api', () => {
         property="value"
         prop="${A}"
         >
+        <div id="bar">foo</div>
         ${B}
       </someTag>
       <greet name="World"></greet>

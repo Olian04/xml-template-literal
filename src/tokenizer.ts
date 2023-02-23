@@ -18,9 +18,18 @@ export function* tokenizer<T>(segments: {
       const staticSegment = segments.static[staticIndex];
       let index = 0;
       while (index < staticSegment.length) {
-        const maybeWhiteSpace = /^ +/.exec(staticSegment.substring(index));
+        const maybeWhiteSpace = /^[ \t]+/.exec(staticSegment.substring(index));
         if (maybeWhiteSpace) {
           index += maybeWhiteSpace[0].length;
+          currentCol += maybeWhiteSpace[0].length;
+          continue;
+        }
+
+        const maybeNewline = /^\n+/.exec(staticSegment.substring(index));
+        if (maybeNewline) {
+          index += maybeNewline[0].length;
+          currentCol = 0;
+          currentRow += maybeNewline[0].length;
           continue;
         }
 
@@ -39,7 +48,7 @@ export function* tokenizer<T>(segments: {
           continue;
         }
 
-        const maybeSymbol = /^[^<>/=" ]+/.exec(staticSegment.substring(index));
+        const maybeSymbol = /^[^<>/="\s]+/.exec(staticSegment.substring(index));
         if (maybeSymbol) {
           yield {
             kind: 'symbol',
@@ -51,13 +60,6 @@ export function* tokenizer<T>(segments: {
           };
           index += maybeSymbol[0].length;
           currentCol += maybeSymbol[0].length;
-          continue;
-        }
-
-        const maybeNewline = /^\n+$/.exec(staticSegment.substring(index));
-        if (maybeNewline) {
-          currentCol = 0;
-          currentRow += maybeNewline[0].length;
           continue;
         }
 

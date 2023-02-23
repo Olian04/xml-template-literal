@@ -19,14 +19,18 @@ const buildAttribute = <T>(
     throw new UnexpectedEOF();
   }
   if (token.value.kind !== 'syntax' && token.value.value !== '=') {
-    throw new UnexpectedToken(`Expected '=' but got '${token.value.value}'`);
+    throw new UnexpectedToken(
+      `Expected '=' but got '${token.value.value}' (${token.value.position.row}:${token.value.position.col})`
+    );
   }
   token = tokenizer.next();
   if (token.done) {
     throw new UnexpectedEOF();
   }
   if (token.value.kind !== 'syntax' && token.value.value !== '"') {
-    throw new UnexpectedToken(`Expected '"' but got '${token.value.value}'`);
+    throw new UnexpectedToken(
+      `Expected '"' but got '${token.value.value}' (${token.value.position.row}:${token.value.position.col})`
+    );
   }
   while (!(token = tokenizer.next()).done) {
     if (token.value.kind === 'syntax' && token.value.value === '"') {
@@ -61,7 +65,9 @@ const buildChild = <T>(
   let attributes: AstAttribute<T>[] = [];
   let children: AstChild<T>[] = [];
   if (token.value.kind !== 'syntax' || token.value.value !== '<') {
-    throw new UnexpectedToken(`Expected '<' but got '${token.value.value}'`);
+    throw new UnexpectedToken(
+      `Expected '<' but got '${token.value.value}' (${token.value.position.row}:${token.value.position.col})`
+    );
   }
   token = tokenizer.next();
   if (token.done) {
@@ -69,7 +75,7 @@ const buildChild = <T>(
   }
   if (token.value.kind !== 'symbol') {
     throw new UnexpectedToken(
-      `Expected a symbol but got '${token.value.value}'`
+      `Expected a symbol but got '${token.value.value}' (${token.value.position.row}:${token.value.position.col})`
     );
   }
   const tag = token.value.value;
@@ -82,6 +88,8 @@ const buildChild = <T>(
     }
   }
   while (!(token = tokenizer.next()).done) {
+    // TODO: This doesn't account for child elements.
+    // Solution will need to peek at next element and determine if its the closing tag for the current element, or the opening tag for a child element.
     if (token.value.kind === 'syntax' && token.value.value === '<') {
       break;
     }
@@ -92,7 +100,9 @@ const buildChild = <T>(
     throw new UnexpectedEOF();
   }
   if (token.value.kind !== 'syntax' || token.value.value !== '/') {
-    throw new UnexpectedToken(`Expected '/' but got '${token.value.value}'`);
+    throw new UnexpectedToken(
+      `Expected '/' but got '${token.value.value}' (${token.value.position.row}:${token.value.position.col})`
+    );
   }
   token = tokenizer.next();
   if (token.done) {
@@ -100,7 +110,7 @@ const buildChild = <T>(
   }
   if (token.value.kind !== 'symbol' || token.value.value !== tag) {
     throw new UnexpectedToken(
-      `Missmatched closing tag, expected '${tag}' but got '${token.value.value}'`
+      `Mismatched closing tag, expected '${tag}' but got '${token.value.value}' (${token.value.position.row}:${token.value.position.col})`
     );
   }
   token = tokenizer.next();
@@ -108,7 +118,9 @@ const buildChild = <T>(
     throw new UnexpectedEOF();
   }
   if (token.value.kind !== 'syntax' || token.value.value !== '>') {
-    throw new UnexpectedToken(`Expected '>' but got '${token.value.value}'`);
+    throw new UnexpectedToken(
+      `Expected '>' but got '${token.value.value}' (${token.value.position.row}:${token.value.position.col})`
+    );
   }
   return {
     type: 'child',
