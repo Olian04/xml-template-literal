@@ -17,3 +17,7 @@ const ast = xml`
 <node> ::= <tag_open> <label> <attribute>* (<tag_selfclose> | (<tag_end> <child>* <tag_close> <label> <tag_end>))
 <attribute> ::= <label> "=" (<dynamic> | ("\"" [^"]+ "\""))
 ```
+
+```ts
+
+```
