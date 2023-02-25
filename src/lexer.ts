@@ -8,152 +8,160 @@ import { UnexpectedToken } from './errors/UnexpectedToken';
 
 const buildAttribute = <T>(
   key: string,
-  tokenizer: Generator<Token<T>, null, unknown>
-): AstAttribute<T> => {
+  startIndex: number,
+  tokens: Token<T>[]
+): [AstAttribute<T>, number] => {
   const attribute: AstAttribute<T> = {
     key,
     value: [],
   };
-  let token: IteratorResult<Token<T>> = tokenizer.next();
-  if (token.done) {
+  let i = startIndex + 1;
+  if (i >= tokens.length) {
     throw new UnexpectedEOF();
   }
-  if (token.value.kind !== 'syntax' && token.value.value !== '=') {
+  let token = tokens[i];
+  if (token.kind !== 'syntax' && token.value !== '=') {
     throw new UnexpectedToken(
-      `Expected '=' but got '${token.value.value}' (${token.value.position.row}:${token.value.position.col})`
+      `Expected '=' but got '${token.value}' (${token.position.row}:${token.position.col})`
     );
   }
-  token = tokenizer.next();
-  if (token.done) {
+  i += 1;
+  if (i >= tokens.length) {
     throw new UnexpectedEOF();
   }
-  if (token.value.kind !== 'syntax' && token.value.value !== '"') {
+  token = tokens[i];
+  if (token.kind !== 'syntax' && token.value !== '"') {
     throw new UnexpectedToken(
-      `Expected '"' but got '${token.value.value}' (${token.value.position.row}:${token.value.position.col})`
+      `Expected '"' but got '${token.value}' (${token.position.row}:${token.position.col})`
     );
   }
-  while (!(token = tokenizer.next()).done) {
-    if (token.value.kind === 'syntax' && token.value.value === '"') {
+  for (; i < tokens.length; i++) {
+    token = tokens[i];
+    if (token.kind === 'syntax' && token.value === '"') {
       break;
     }
-    attribute.value.push(token.value.value);
+    attribute.value.push(token.value);
   }
-  return attribute;
+  return [attribute, i - startIndex];
 };
 
 const buildChild = <T>(
-  tokenizer: Generator<Token<T>, null, unknown>
-): AstChild<T> => {
-  let token: IteratorResult<Token<T>> = tokenizer.next();
-  if (token.done) {
+  startIndex: number,
+  tokens: Token<T>[]
+): [AstChild<T>, number] => {
+  let i = startIndex;
+  if (i >= tokens.length) {
     throw new UnexpectedEOF();
   }
-  if (token.value.kind === 'dynamic') {
-    return {
-      type: 'child',
-      kind: 'value',
-      value: token.value.value,
-    };
-  } else if (token.value.kind === 'value') {
-    return {
-      type: 'child',
-      kind: 'text',
-      value: token.value.value,
-    };
+  let token = tokens[i];
+  if (token.kind === 'dynamic') {
+    return [
+      {
+        type: 'child',
+        kind: 'value',
+        value: token.value,
+      },
+      i - startIndex,
+    ];
+  } else if (token.kind === 'value') {
+    return [
+      {
+        type: 'child',
+        kind: 'text',
+        value: token.value,
+      },
+      i - startIndex,
+    ];
   }
 
   let attributes: AstAttribute<T>[] = [];
   let children: AstChild<T>[] = [];
-  if (token.value.kind !== 'syntax' || token.value.value !== '<') {
+  if (token.kind !== 'syntax' || token.value !== '<') {
     throw new UnexpectedToken(
-      `Expected '<' but got '${token.value.value}' (${token.value.position.row}:${token.value.position.col})`
+      `Expected '<' but got '${token.value}' (${token.position.row}:${token.position.col})`
     );
   }
-  token = tokenizer.next();
-  if (token.done) {
+  i += 1;
+  if (i >= tokens.length) {
     throw new UnexpectedEOF();
   }
-  if (token.value.kind !== 'symbol') {
+  token = tokens[i];
+  if (token.kind !== 'symbol') {
     throw new UnexpectedToken(
-      `Expected a symbol but got '${token.value.value}' (${token.value.position.row}:${token.value.position.col})`
+      `Expected a symbol but got '${token.value}' (${token.position.row}:${token.position.col})`
     );
   }
-  const tag = token.value.value;
-  while (!(token = tokenizer.next()).done) {
-    if (token.value.kind === 'syntax' && token.value.value === '>') {
+  const tag = token.value;
+  for (; i < tokens.length; i++) {
+    token = tokens[i];
+    if (token.kind === 'syntax' && token.value === '>') {
       break;
     }
-    if (token.value.kind === 'symbol') {
-      attributes.push(buildAttribute(token.value.value, tokenizer));
+    if (token.kind === 'symbol') {
+      const [attribute, consumed] = buildAttribute(token.value, i, tokens);
+      i += consumed;
+      attributes.push(attribute);
     }
   }
-  while (!(token = tokenizer.next()).done) {
+  for (; i < tokens.length; i++) {
+    token = tokens[i];
     // TODO: This doesn't account for child elements.
     // Solution will need to peek at next element and determine if its the closing tag for the current element, or the opening tag for a child element.
-    if (token.value.kind === 'syntax' && token.value.value === '<') {
+    if (token.kind === 'syntax' && token.value === '<') {
       break;
     }
-    children.push(buildChild(tokenizer));
+    const [child, consumed] = buildChild(i, tokens);
+    i += consumed;
+    children.push(child);
   }
-  token = tokenizer.next();
-  if (token.done) {
+  i += 1;
+  if (i >= tokens.length) {
     throw new UnexpectedEOF();
   }
-  if (token.value.kind !== 'syntax' || token.value.value !== '/') {
+  token = tokens[i];
+  if (token.kind !== 'syntax' || token.value !== '/') {
     throw new UnexpectedToken(
-      `Expected '/' but got '${token.value.value}' (${token.value.position.row}:${token.value.position.col})`
+      `Expected '/' but got '${token.value}' (${token.position.row}:${token.position.col})`
     );
   }
-  token = tokenizer.next();
-  if (token.done) {
+  i += 1;
+  if (i >= tokens.length) {
     throw new UnexpectedEOF();
   }
-  if (token.value.kind !== 'symbol' || token.value.value !== tag) {
+  token = tokens[i];
+  if (token.kind !== 'symbol' || token.value !== tag) {
     throw new UnexpectedToken(
-      `Mismatched closing tag, expected '${tag}' but got '${token.value.value}' (${token.value.position.row}:${token.value.position.col})`
+      `Mismatched closing tag, expected '${tag}' but got '${token.value}' (${token.position.row}:${token.position.col})`
     );
   }
-  token = tokenizer.next();
-  if (token.done) {
+  i += 1;
+  if (i >= tokens.length) {
     throw new UnexpectedEOF();
   }
-  if (token.value.kind !== 'syntax' || token.value.value !== '>') {
+  token = tokens[i];
+  if (token.kind !== 'syntax' || token.value !== '>') {
     throw new UnexpectedToken(
-      `Expected '>' but got '${token.value.value}' (${token.value.position.row}:${token.value.position.col})`
+      `Expected '>' but got '${token.value}' (${token.position.row}:${token.position.col})`
     );
   }
-  return {
-    type: 'child',
-    kind: 'node',
-    tag,
-    attributes,
-    children,
-  };
+  return [
+    {
+      type: 'child',
+      kind: 'node',
+      tag,
+      attributes,
+      children,
+    },
+    i - startIndex,
+  ];
 };
 
-function peek<G>(
-  iterator: Generator<G, null, unknown>
-): [IteratorResult<G, null>, Generator<G, null, unknown>] {
-  let peeked = iterator.next();
-  let rebuiltIterator = function* () {
-    if (peeked.done) return null;
-    yield peeked.value;
-    yield* iterator;
-    return null;
-  };
-  return [peeked, rebuiltIterator()];
-}
-
-export const lexer = <T>(
-  tokenizer: Generator<Token<T>, null, unknown>
-): AstRoot<T> => {
-  let children: AstChild<T>[] = [];
-  while (true) {
-    const [peeked, newTokenize] = peek(tokenizer);
-    if (peeked.done) {
-      break;
-    }
-    children.push(buildChild(newTokenize));
+export const lexer = <T>(tokens: Token<T>[]): AstRoot<T> => {
+  const children: AstChild<T>[] = [];
+  for (let i = 0; i < tokens.length; i++) {
+    const [child, consumed] = buildChild(i, tokens);
+    i += consumed;
+    children.push(child);
   }
   return {
     type: 'root',

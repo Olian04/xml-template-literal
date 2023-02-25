@@ -4,13 +4,12 @@ import { expect } from 'chai';
 import { tokenizer } from '../src/tokenizer';
 
 describe('tokenizer', () => {
-  it('should return a generator', () => {
+  it('should return an array', () => {
     const tok = tokenizer({
       dynamic: [],
       static: [],
     });
-    expect(typeof tok[Symbol.iterator]).to.equal('function');
-    expect(typeof tok['next']).to.equal('function');
+    expect(Array.isArray(tok)).true;
   });
 
   it('should correctly tokenize naked tag', () => {

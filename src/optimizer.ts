@@ -1,105 +1,114 @@
 import type { Token } from './types/Token';
 
-function* optimizeAttributeValue<T>(
-  tokenizer: Generator<Token<T>, null, unknown>
-): Generator<Token<T>, null, unknown> {
+const optimizeAttributeValue = <T>(
+  startIndex: number,
+  tokens: Token<T>[]
+): [Token<T>[], number] => {
   let valuePos: { col: number; row: number } = { col: NaN, row: NaN };
   let valueAggregator = '';
-  let token: IteratorResult<Token<T>, any>;
-  while (!(token = tokenizer.next()).done) {
+  let i = startIndex + 1;
+  const optimizedTokens: Token<T>[] = [];
+  for (; i < tokens.length; i++) {
+    const token = tokens[i];
     if (isNaN(valuePos.col)) {
-      valuePos = token.value.position;
+      valuePos = token.position;
     }
 
-    if (token.value.kind === 'symbol') {
-      valueAggregator += token.value.value;
-    } else if (token.value.kind === 'syntax' && token.value.value !== '"') {
-      valueAggregator += token.value.value;
-    } else if (token.value.kind === 'dynamic') {
+    if (token.kind === 'symbol') {
+      valueAggregator += token.value;
+    } else if (token.kind === 'syntax' && token.value !== '"') {
+      valueAggregator += token.value;
+    } else if (token.kind === 'dynamic') {
       if (valueAggregator.length > 0) {
-        yield {
+        optimizedTokens.push({
           kind: 'value',
           value: valueAggregator,
           position: valuePos,
-        };
+        });
       }
       valueAggregator = '';
       valuePos = { col: NaN, row: NaN };
-      yield token.value;
-    } else if (token.value.kind === 'syntax' && token.value.value === '"') {
+      optimizedTokens.push(token);
+    } else if (token.kind === 'syntax' && token.value === '"') {
       if (valueAggregator.length > 0) {
-        yield {
+        optimizedTokens.push({
           kind: 'value',
           value: valueAggregator,
           position: valuePos,
-        };
+        });
       }
-      yield token.value;
+      optimizedTokens.push(token);
       break;
     }
   }
-  return null;
-}
+  return [optimizedTokens, i - startIndex];
+};
 
-function* optimizeTagDefinition<T>(
-  tokenizer: Generator<Token<T>, null, unknown>
-): Generator<Token<T>, null, unknown> {
-  let token: IteratorResult<Token<T>>;
-  while (!(token = tokenizer.next()).done) {
-    if (token.value.kind === 'syntax' && token.value.value === '"') {
-      yield token.value;
-      yield* optimizeAttributeValue(tokenizer);
-    } else if (token.value.kind === 'syntax' && token.value.value === '>') {
-      yield token.value;
+const optimizeTagDefinition = <T>(
+  startIndex: number,
+  tokens: Token<T>[]
+): [Token<T>[], number] => {
+  let i = startIndex + 1;
+  const optimizedTokens: Token<T>[] = [];
+  for (; i < tokens.length; i++) {
+    const token = tokens[i];
+    if (token.kind === 'syntax' && token.value === '"') {
+      optimizedTokens.push(token);
+      const [attributeTokens, consumed] = optimizeAttributeValue(i, tokens);
+      i += consumed;
+      optimizedTokens.push(...attributeTokens);
+    } else if (token.kind === 'syntax' && token.value === '>') {
+      optimizedTokens.push(token);
       break;
     } else {
-      yield token.value;
+      optimizedTokens.push(token);
     }
   }
-  return null;
-}
+  return [optimizedTokens, i - startIndex];
+};
 
-export function* optimizer<T>(
-  tokenizer: Generator<Token<T>, null, unknown>
-): Generator<Token<T>, null, unknown> {
+export const optimizer = <T>(tokens: Token<T>[]): Token<T>[] => {
   let valuePos: { col: number; row: number } = { col: NaN, row: NaN };
   let valueAggregator = '';
-  let token: IteratorResult<Token<T>>;
-  while (!(token = tokenizer.next()).done) {
+  const optimizedTokens: Token<T>[] = [];
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
     if (isNaN(valuePos.col)) {
-      valuePos = token.value.position;
+      valuePos = token.position;
     }
 
-    if (token.value.kind === 'syntax' && token.value.value === '<') {
+    if (token.kind === 'syntax' && token.value === '<') {
       if (valueAggregator.length > 0) {
-        yield {
+        optimizedTokens.push({
           kind: 'value',
           value: valueAggregator,
           position: valuePos,
-        };
+        });
       }
       valueAggregator = '';
       valuePos = { col: NaN, row: NaN };
 
-      yield token.value;
-      yield* optimizeTagDefinition(tokenizer);
-    } else if (token.value.kind === 'dynamic') {
+      optimizedTokens.push(token);
+      const [tagTokens, consumed] = optimizeTagDefinition(i, tokens);
+      optimizedTokens.push(...tagTokens);
+      i += consumed;
+    } else if (token.kind === 'dynamic') {
       if (valueAggregator.length > 0) {
-        yield {
+        optimizedTokens.push({
           kind: 'value',
           value: valueAggregator,
           position: valuePos,
-        };
+        });
       }
       valueAggregator = '';
       valuePos = { col: NaN, row: NaN };
 
-      yield token.value;
-    } else if (token.value.kind === 'symbol') {
-      valueAggregator += token.value.value;
-    } else if (token.value.kind === 'syntax') {
-      valueAggregator += token.value.value;
+      optimizedTokens.push(token);
+    } else if (token.kind === 'symbol') {
+      valueAggregator += token.value;
+    } else if (token.kind === 'syntax') {
+      valueAggregator += token.value;
     }
   }
-  return null;
-}
+  return optimizedTokens;
+};

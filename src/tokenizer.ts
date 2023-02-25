@@ -5,10 +5,11 @@ import { UnexpectedToken } from './errors/UnexpectedToken';
 
 const isStaticSegment = (v: number) => v % 2 === 0;
 
-export function* tokenizer<T>(segments: {
+export const tokenizer = <T>(segments: {
   static: string[];
   dynamic: T[];
-}): Generator<Token<T>, null, unknown> {
+}): Token<T>[] => {
+  const tokens: Token<T>[] = [];
   let currentRow = 0;
   let currentCol = 0;
   let staticIndex = 0;
@@ -35,14 +36,14 @@ export function* tokenizer<T>(segments: {
 
         const maybeSyntax = /^[<>/="]/.exec(staticSegment.substring(index));
         if (maybeSyntax) {
-          yield {
+          tokens.push({
             kind: 'syntax',
             value: maybeSyntax[0] as SyntaxToken['value'],
             position: {
               row: currentRow,
               col: currentCol,
             },
-          };
+          });
           index += maybeSyntax[0].length;
           currentCol += maybeSyntax[0].length;
           continue;
@@ -50,14 +51,14 @@ export function* tokenizer<T>(segments: {
 
         const maybeSymbol = /^[^<>/="\s]+/.exec(staticSegment.substring(index));
         if (maybeSymbol) {
-          yield {
+          tokens.push({
             kind: 'symbol',
             value: maybeSymbol[0],
             position: {
               row: currentRow,
               col: currentCol,
             },
-          };
+          });
           index += maybeSymbol[0].length;
           currentCol += maybeSymbol[0].length;
           continue;
@@ -69,17 +70,17 @@ export function* tokenizer<T>(segments: {
       }
       staticIndex += 1;
     } else {
-      yield {
+      tokens.push({
         kind: 'dynamic',
         value: segments.dynamic[dynamicIndex],
         position: {
           row: currentRow,
           col: currentCol,
         },
-      };
+      });
       currentCol += 1;
       dynamicIndex += 1;
     }
   }
-  return null;
-}
+  return tokens;
+};

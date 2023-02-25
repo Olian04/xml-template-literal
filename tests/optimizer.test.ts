@@ -5,15 +5,14 @@ import { tokenizer } from '../src/tokenizer';
 import { optimizer } from '../src/optimizer';
 
 describe('optimizer', () => {
-  it('should return a generator', () => {
+  it('should return an array', () => {
     const tokRef = optimizer(
       tokenizer({
         dynamic: [],
         static: [],
       })
     );
-    expect(typeof tokRef[Symbol.iterator]).to.equal('function');
-    expect(typeof tokRef['next']).to.equal('function');
+    expect(Array.isArray(tokRef)).true;
   });
 
   it("shouldn't modify a token stream with no optimizations needed", () => {
