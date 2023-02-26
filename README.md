@@ -13,16 +13,3 @@ const ast = xml`
   </div>
 `;
 ```
-
-```
-N --> < L {A} (/ >) | (> {C} < / L >)
-A --> L = (" V " | D)
-C --> N | D | T
-
-N: Node
-A: Attribute
-C: Child
-D: Dynamic
-T: Text
-L: Label
-```
