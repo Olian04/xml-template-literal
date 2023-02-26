@@ -1,13 +1,83 @@
-import {
-  Token,
-  SyntaxToken,
-  TokenKind,
-  StaticTokenContext,
-} from './types/Token';
+import { Token, SyntaxToken, TokenKind, TextToken } from './types/Token';
 
 const isStaticSegment = (v: number) => v % 2 === 0;
 const clamp = (upper: number, lower: number, value: number) =>
   value > upper ? upper : value < lower ? lower : value;
+
+function* tokenizeString(input: string): Generator<SyntaxToken | TextToken> {
+  for (const char of input) {
+    switch (char) {
+      case '<':
+        yield {
+          kind: TokenKind.Syntax,
+          value: '<',
+        };
+        break;
+      case '>':
+        yield {
+          kind: TokenKind.Syntax,
+          value: '>',
+        };
+        break;
+      case '/':
+        yield {
+          kind: TokenKind.Syntax,
+          value: '/',
+        };
+        break;
+      case '=':
+        yield {
+          kind: TokenKind.Syntax,
+          value: '=',
+        };
+        break;
+      case '"':
+        yield {
+          kind: TokenKind.Syntax,
+          value: '"',
+        };
+        break;
+      case ' ':
+        yield {
+          kind: TokenKind.Syntax,
+          value: ' ',
+        };
+        break;
+      default:
+        yield {
+          kind: TokenKind.Text,
+          value: char,
+        };
+        break;
+    }
+  }
+}
+
+function* accumulateTextTokens(
+  tokens: Generator<SyntaxToken | TextToken>
+): Generator<SyntaxToken | TextToken> {
+  let textAccumulator = '';
+  for (const tok of tokens) {
+    if (tok.kind === TokenKind.Syntax) {
+      if (textAccumulator) {
+        yield {
+          kind: TokenKind.Text,
+          value: textAccumulator,
+        };
+        textAccumulator = '';
+      }
+      yield tok;
+    } else {
+      textAccumulator += tok.value;
+    }
+  }
+  if (textAccumulator) {
+    yield {
+      kind: TokenKind.Text,
+      value: textAccumulator,
+    };
+  }
+}
 
 export function* tokenizer<T>(originalSegments: {
   static: string[];
@@ -30,95 +100,14 @@ export function* tokenizer<T>(originalSegments: {
       };
     });
 
-  const dynamicPlaceholder = '${...}';
-  const stringCode = segments
-    .map(({ type, value }) => (type === 'dynamic' ? dynamicPlaceholder : value))
-    .join('');
-
-  const codeContextWindowSize = 10;
-  let codeContextWindowIndex = 0;
   for (const segment of segments) {
     if (segment.type === 'static') {
-      let valueBuffer = '';
-      for (let index = 0; index < segment.value.length; index++) {
-        for (const [pattern, syntaxKind] of [
-          [/^\//, SyntaxToken.TagCloseIndicator],
-          [/^</, SyntaxToken.TagStart],
-          [/^>/, SyntaxToken.TagEnd],
-          [/^=/, SyntaxToken.AttributeAssign],
-          [/^"/, SyntaxToken.AttributeOpenOrClose],
-          [/^ +/, SyntaxToken.WhiteSpace],
-        ] as const) {
-          const maybeMatch = pattern.exec(segment.value.substring(index));
-          if (!maybeMatch) {
-            continue;
-          }
-          if (valueBuffer) {
-            yield {
-              kind: TokenKind.Static,
-              context: StaticTokenContext.Unknown,
-              value: valueBuffer,
-              codeContext: stringCode.substring(
-                clamp(
-                  0,
-                  stringCode.length,
-                  codeContextWindowIndex +
-                    index -
-                    valueBuffer.length -
-                    codeContextWindowSize / 2
-                ),
-                clamp(
-                  0,
-                  stringCode.length,
-                  codeContextWindowIndex +
-                    index -
-                    valueBuffer.length +
-                    codeContextWindowSize / 2
-                )
-              ),
-            };
-            valueBuffer = '';
-          }
-          yield {
-            kind: TokenKind.Syntax,
-            value: maybeMatch[0] as typeof syntaxKind,
-            codeContext: stringCode.substring(
-              clamp(
-                0,
-                stringCode.length,
-                codeContextWindowIndex + index - codeContextWindowSize / 2
-              ),
-              clamp(
-                0,
-                stringCode.length,
-                codeContextWindowIndex + index + codeContextWindowSize / 2
-              )
-            ),
-          };
-          index += maybeMatch[0].length;
-          break;
-        }
-        valueBuffer += segment.value[index];
-      }
-      codeContextWindowIndex += segment.value.length;
+      yield* accumulateTextTokens(tokenizeString(segment.value));
     } else if (segment.type === 'dynamic') {
       yield {
-        kind: TokenKind.Dynamic,
+        kind: TokenKind.Data,
         value: segment.value,
-        codeContext: stringCode.substring(
-          clamp(
-            0,
-            stringCode.length,
-            codeContextWindowIndex - codeContextWindowSize / 2
-          ),
-          clamp(
-            0,
-            stringCode.length,
-            codeContextWindowIndex + codeContextWindowSize / 2
-          )
-        ),
       };
-      codeContextWindowIndex += dynamicPlaceholder.length;
     } else {
       throw new Error(`Unknown segment: ${segment}`);
     }

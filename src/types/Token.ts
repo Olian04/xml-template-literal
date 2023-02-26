@@ -1,39 +1,22 @@
 export enum TokenKind {
   Syntax = 'Syntax',
-  Dynamic = 'Dynamic',
-  Static = 'Static',
-}
-
-export enum StaticTokenContext {
-  Unknown = 'Unknown',
+  Data = 'Data',
   Text = 'Text',
-  Value = 'Value',
-  Label = 'Label',
 }
 
-export enum SyntaxToken {
-  TagStart = '<',
-  TagEnd = '>',
-  TagCloseIndicator = '/',
-  AttributeAssign = '=',
-  AttributeOpenOrClose = '"',
-  WhiteSpace = ' ',
-}
+export type SyntaxToken = {
+  kind: TokenKind.Syntax;
+  value: '<' | '>' | '/' | '=' | '"' | ' ';
+};
 
-export type Token<T> =
-  | {
-      kind: TokenKind.Dynamic;
-      value: T;
-      codeContext: string;
-    }
-  | {
-      kind: TokenKind.Syntax;
-      value: SyntaxToken;
-      codeContext: string;
-    }
-  | {
-      kind: TokenKind.Static;
-      context: StaticTokenContext;
-      value: string;
-      codeContext: string;
-    };
+export type TextToken = {
+  kind: TokenKind.Text;
+  value: string;
+};
+
+export type DataToken<T> = {
+  kind: TokenKind.Data;
+  value: T;
+};
+
+export type Token<T> = DataToken<T> | SyntaxToken | TextToken;
