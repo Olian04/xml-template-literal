@@ -1,5 +1,5 @@
 export class UnexpectedEOF extends Error {
-  constructor() {
-    super('UnexpectedEOF');
+  constructor(near: string) {
+    super(`UnexpectedEOF near: ${near}`);
   }
 }

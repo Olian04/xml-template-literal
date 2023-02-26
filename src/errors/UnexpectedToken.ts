@@ -1,5 +1,5 @@
 export class UnexpectedToken extends Error {
-  constructor(msg: string) {
-    super(`UnexpectedToken: ${msg}`);
+  constructor(expected: string, got: string) {
+    super(`UnexpectedToken: Expected "${expected}" but got "${got}"`);
   }
 }

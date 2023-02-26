@@ -1,5 +1,7 @@
+import { UnexpectedEOF } from '../errors/UnexpectedEOF';
+
 export const createConsumeStream = <T>(gen: Generator<T>) => {
-  let cache: { next?: IteratorResult<T> } = {};
+  let cache: { next?: IteratorResult<T>; previous?: IteratorResult<T> } = {};
 
   const next = () => {
     if (!('next' in cache)) {
@@ -8,11 +10,28 @@ export const createConsumeStream = <T>(gen: Generator<T>) => {
     return cache.next as IteratorResult<T>;
   };
   const api = {
-    done: () => Boolean(next().done),
-    consumeOne: () => {
-      cache.next = gen.next();
+    next: () => {
+      cache.previous = cache.next;
+      delete cache.next;
+      next();
     },
-    current: () => next().value as T,
+    get done() {
+      return Boolean(next().done);
+    },
+    get current() {
+      if (api.done) {
+        if ('previous' in cache && 'next' in cache) {
+          throw new UnexpectedEOF(
+            `${cache.previous?.value}${cache.next?.value}`
+          );
+        } else if ('next' in cache) {
+          throw new UnexpectedEOF(`${cache.next?.value}`);
+        } else {
+          throw new UnexpectedEOF(`start of input`);
+        }
+      }
+      return next().value as T;
+    },
   };
 
   return api;
