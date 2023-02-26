@@ -17,7 +17,6 @@ describe('tokenizer', () => {
     expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
       '<',
       'div',
-      ' ',
       '>',
       '<',
       '/',
@@ -37,7 +36,6 @@ describe('tokenizer', () => {
     expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
       '<',
       'div',
-      ' ',
       '/',
       '>',
     ]);
@@ -54,7 +52,6 @@ describe('tokenizer', () => {
     expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
       '<',
       'div',
-      ' ',
       'id',
       '=',
       '"',
@@ -80,7 +77,6 @@ describe('tokenizer', () => {
       '<',
       'div',
       '>',
-      ' ',
       '<',
       'p',
       '>',
@@ -91,6 +87,73 @@ describe('tokenizer', () => {
       '<',
       '/',
       'div',
+      '>',
+    ]);
+  });
+  it('should handle a real usage senario', () => {
+    const A = { foo: 0 };
+    const B = [1, 2, 3];
+    const tok = tokenizer(
+      mergeTemplateSegments({
+        static: [
+          '\n    <someTag\n    property="value"\n    prop=',
+          '\n    >\n    <div id="bar">foo</div>\n    ',
+          '\n  </someTag>\n  <greet name="World" />\n   <greet name="World"></greet> ',
+        ],
+        dynamic: [A, B],
+      })
+    );
+
+    expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
+      '<',
+      'someTag',
+      'property',
+      '=',
+      '"',
+      'value',
+      '"',
+      'prop',
+      '=',
+      A,
+      '>',
+      '<',
+      'div',
+      'id',
+      '=',
+      '"',
+      'bar',
+      '"',
+      '>',
+      'foo',
+      '<',
+      '/',
+      'div',
+      '>',
+      B,
+      '<',
+      '/',
+      'someTag',
+      '>',
+      '<',
+      'greet',
+      'name',
+      '=',
+      '"',
+      'World',
+      '"',
+      '/',
+      '>',
+      '<',
+      'greet',
+      'name',
+      '=',
+      '"',
+      'World',
+      '"',
+      '>',
+      '<',
+      '/',
+      'greet',
       '>',
     ]);
   });

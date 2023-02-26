@@ -34,15 +34,14 @@ function* tokenizeString(input: string): Generator<SyntaxToken | TextToken> {
           value: '"',
         };
         break;
+      case '\n':
+      case '\t':
+      case '\r':
       case ' ':
         yield {
           kind: TokenKind.Syntax,
           value: ' ',
         };
-        break;
-      case '\n':
-        // Ignore newline
-        // TODO: Account for this in error handling
         break;
       default:
         yield {
@@ -80,11 +79,52 @@ function* accumulateTextTokens(
   }
 }
 
+function* accumulateWhitespaceTokens(
+  tokens: Generator<SyntaxToken | TextToken>
+): Generator<SyntaxToken | TextToken> {
+  let whitespaceAccumulator = '';
+  for (const tok of tokens) {
+    if (tok.kind === TokenKind.Syntax && tok.value === ' ') {
+      whitespaceAccumulator += tok.value;
+    } else {
+      if (whitespaceAccumulator.length > 0) {
+        yield {
+          kind: TokenKind.Syntax,
+          value: ' ',
+        };
+        whitespaceAccumulator = '';
+      }
+      yield tok;
+    }
+  }
+  if (whitespaceAccumulator.length > 0) {
+    yield {
+      kind: TokenKind.Syntax,
+      value: ' ',
+    };
+    whitespaceAccumulator = '';
+  }
+}
+
+function* filter(
+  predicate: (tok: SyntaxToken | TextToken) => boolean,
+  tokens: Generator<SyntaxToken | TextToken>
+): Generator<SyntaxToken | TextToken> {
+  for (const tok of tokens) {
+    if (predicate(tok)) {
+      yield tok;
+    }
+  }
+}
+
 export function* tokenizer<T>(segments: SegmentStream<T>): Generator<Token<T>> {
   for (const segment of segments) {
     if (segment.type === 'static') {
-      yield* accumulateTextTokens(
-        tokenizeString(segment.value.replaceAll(/\n/g, ''))
+      yield* filter(
+        (tok) => tok.value !== ' ',
+        accumulateTextTokens(
+          accumulateWhitespaceTokens(tokenizeString(segment.value))
+        )
       );
     } else if (segment.type === 'dynamic') {
       yield {

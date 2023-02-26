@@ -12,11 +12,12 @@ describe('api', () => {
     const out = xml<typeof A | typeof B>`
       <someTag
         property="value"
-        prop="${A}"
+        prop=${A}
         >
         <div id="bar">foo</div>
         ${B}
       </someTag>
+      <greet name="World" />
       <greet name="World"></greet>
     `;
 
