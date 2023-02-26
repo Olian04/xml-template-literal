@@ -1,8 +1,5 @@
+import { SegmentStream } from './types/SegmentStream';
 import { Token, SyntaxToken, TokenKind, TextToken } from './types/Token';
-
-const isStaticSegment = (v: number) => v % 2 === 0;
-const clamp = (upper: number, lower: number, value: number) =>
-  value > upper ? upper : value < lower ? lower : value;
 
 function* tokenizeString(input: string): Generator<SyntaxToken | TextToken> {
   for (const char of input) {
@@ -43,6 +40,10 @@ function* tokenizeString(input: string): Generator<SyntaxToken | TextToken> {
           value: ' ',
         };
         break;
+      case '\n':
+        // Ignore newline
+        // TODO: Account for this in error handling
+        break;
       default:
         yield {
           kind: TokenKind.Text,
@@ -79,27 +80,7 @@ function* accumulateTextTokens(
   }
 }
 
-export function* tokenizer<T>(originalSegments: {
-  static: string[];
-  dynamic: T[];
-}): Generator<Token<T>> {
-  const segments = new Array(
-    originalSegments.static.length + originalSegments.dynamic.length
-  )
-    .fill(0)
-    .map((_, i) => {
-      if (isStaticSegment(i)) {
-        return {
-          type: 'static' as const,
-          value: originalSegments.static[Math.floor(i / 2)],
-        };
-      }
-      return {
-        type: 'dynamic' as const,
-        value: originalSegments.dynamic[Math.floor(i / 2)],
-      };
-    });
-
+export function* tokenizer<T>(segments: SegmentStream<T>): Generator<Token<T>> {
   for (const segment of segments) {
     if (segment.type === 'static') {
       yield* accumulateTextTokens(tokenizeString(segment.value));
