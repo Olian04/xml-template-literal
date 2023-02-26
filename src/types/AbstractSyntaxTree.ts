@@ -13,6 +13,7 @@ export type AstChild<T> =
   | {
       kind: 'child';
       type: ChildType.Node;
+      tag: string;
       children: AstChild<T>[];
       attributes: AstAttribute<T>[];
     }

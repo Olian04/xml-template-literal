@@ -48,19 +48,20 @@ const parseChildNode = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
   assert('value', '<', tok.current);
   nextToken(tok);
   assert('kind', TokenKind.Text, tok.current);
-  const tag = tok.current.value;
+  const tag = tok.current.value as string;
   nextToken(tok);
   const attributes: AstAttribute<T>[] = [];
   while (tok.current.kind === TokenKind.Text) {
     attributes.push(parseAttribute(tok));
     nextToken(tok);
   }
-  if (tok.current.value === '/') {
+  if (tok.current.value === '/>') {
+    assert('value', '/>', tok.current);
     nextToken(tok);
-    assert('value', '>', tok.current);
     return {
       kind: 'child',
       type: ChildType.Node,
+      tag,
       attributes,
       children: [],
     };
@@ -68,13 +69,11 @@ const parseChildNode = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
   assert('value', '>', tok.current);
   nextToken(tok);
   const children: AstChild<T>[] = [];
-  while (tok.current.value !== '<') {
+  while (tok.current.value !== '</') {
     children.push(parseChild(tok));
     nextToken(tok);
   }
-  assert('value', '<', tok.current);
-  nextToken(tok);
-  assert('value', '/', tok.current);
+  assert('value', '</', tok.current);
   nextToken(tok);
   assert('value', tag, tok.current);
   nextToken(tok);
@@ -82,6 +81,7 @@ const parseChildNode = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
   return {
     kind: 'child',
     type: ChildType.Node,
+    tag,
     attributes,
     children,
   };

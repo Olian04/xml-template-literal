@@ -81,6 +81,7 @@ describe('parser', () => {
     expect(ast).to.deep.equal({
       kind: 'child',
       type: ChildType.Node,
+      tag: 'someTag',
       attributes: [
         {
           kind: 'attribute',
@@ -96,6 +97,33 @@ describe('parser', () => {
         },
       ],
       children: [],
+    });
+  });
+
+  it('should correctly tokenize tag with children', () => {
+    const ast = parseTokens(
+      tokenizer(
+        mergeTemplateSegments({
+          dynamic: [],
+          static: ['<div><p> </p></div>'],
+        })
+      )
+    );
+
+    expect(ast).to.deep.equal({
+      kind: 'child',
+      type: ChildType.Node,
+      tag: 'div',
+      attributes: [],
+      children: [
+        {
+          kind: 'child',
+          type: ChildType.Node,
+          tag: 'p',
+          attributes: [],
+          children: [],
+        },
+      ],
     });
   });
 });

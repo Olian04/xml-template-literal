@@ -22,6 +22,5 @@ describe('api', () => {
     `;
 
     expect(typeof out).to.equal('object');
-    console.log(out);
   });
 });

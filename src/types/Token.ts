@@ -6,7 +6,7 @@ export enum TokenKind {
 
 export type SyntaxToken = {
   kind: TokenKind.Syntax;
-  value: '<' | '>' | '/' | '=' | '"' | ' ';
+  value: '<' | '>' | '/' | '=' | '"' | ' ' | '</' | '/>';
 };
 
 export type TextToken = {

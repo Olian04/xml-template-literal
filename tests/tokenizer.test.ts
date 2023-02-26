@@ -18,8 +18,7 @@ describe('tokenizer', () => {
       '<',
       'div',
       '>',
-      '<',
-      '/',
+      '</',
       'div',
       '>',
     ]);
@@ -36,8 +35,7 @@ describe('tokenizer', () => {
     expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
       '<',
       'div',
-      '/',
-      '>',
+      '/>',
     ]);
   });
 
@@ -58,8 +56,7 @@ describe('tokenizer', () => {
       'foo',
       '"',
       '>',
-      '<',
-      '/',
+      '</',
       'div',
       '>',
     ]);
@@ -69,7 +66,7 @@ describe('tokenizer', () => {
     const tok = tokenizer(
       mergeTemplateSegments({
         dynamic: [],
-        static: ['<div> <p></p></div>'],
+        static: ['<div><p> </p></div>'],
       })
     );
 
@@ -80,16 +77,15 @@ describe('tokenizer', () => {
       '<',
       'p',
       '>',
-      '<',
-      '/',
+      '</',
       'p',
       '>',
-      '<',
-      '/',
+      '</',
       'div',
       '>',
     ]);
   });
+
   it('should handle a real usage senario', () => {
     const A = { foo: 0 };
     const B = [1, 2, 3];
@@ -125,13 +121,11 @@ describe('tokenizer', () => {
       '"',
       '>',
       'foo',
-      '<',
-      '/',
+      '</',
       'div',
       '>',
       B,
-      '<',
-      '/',
+      '</',
       'someTag',
       '>',
       '<',
@@ -141,8 +135,7 @@ describe('tokenizer', () => {
       '"',
       'World',
       '"',
-      '/',
-      '>',
+      '/>',
       '<',
       'greet',
       'name',
@@ -151,8 +144,7 @@ describe('tokenizer', () => {
       'World',
       '"',
       '>',
-      '<',
-      '/',
+      '</',
       'greet',
       '>',
     ]);

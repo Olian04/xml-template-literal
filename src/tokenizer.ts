@@ -106,12 +106,53 @@ function* accumulateWhitespaceTokens(
   }
 }
 
-function* filter(
-  predicate: (tok: SyntaxToken | TextToken) => boolean,
+function* produceJoinedTokens(
+  tokens: Generator<SyntaxToken | TextToken>
+): Generator<SyntaxToken | TextToken> {
+  let tok: IteratorResult<SyntaxToken | TextToken, any>;
+  let curr_token: SyntaxToken | TextToken | undefined = undefined;
+  let prev_token: SyntaxToken | TextToken | undefined = undefined;
+  while (!(tok = tokens.next()).done) {
+    prev_token = curr_token;
+    curr_token = tok.value;
+
+    if (
+      prev_token?.kind === TokenKind.Syntax &&
+      curr_token.kind === TokenKind.Syntax
+    ) {
+      if (prev_token.value === '<' && curr_token.value === '/') {
+        yield {
+          kind: TokenKind.Syntax,
+          value: '</',
+        };
+        curr_token = undefined;
+        continue;
+      }
+
+      if (prev_token.value === '/' && curr_token.value === '>') {
+        yield {
+          kind: TokenKind.Syntax,
+          value: '/>',
+        };
+        curr_token = undefined;
+        continue;
+      }
+    }
+
+    if (prev_token) {
+      yield prev_token;
+    }
+  }
+  if (curr_token) {
+    yield curr_token;
+  }
+}
+
+function* stripOutWhitespace(
   tokens: Generator<SyntaxToken | TextToken>
 ): Generator<SyntaxToken | TextToken> {
   for (const tok of tokens) {
-    if (predicate(tok)) {
+    if (tok.value !== ' ') {
       yield tok;
     }
   }
@@ -120,10 +161,11 @@ function* filter(
 export function* tokenizer<T>(segments: SegmentStream<T>): Generator<Token<T>> {
   for (const segment of segments) {
     if (segment.type === 'static') {
-      yield* filter(
-        (tok) => tok.value !== ' ',
-        accumulateTextTokens(
-          accumulateWhitespaceTokens(tokenizeString(segment.value))
+      yield* produceJoinedTokens(
+        stripOutWhitespace(
+          accumulateTextTokens(
+            accumulateWhitespaceTokens(tokenizeString(segment.value))
+          )
         )
       );
     } else if (segment.type === 'dynamic') {
