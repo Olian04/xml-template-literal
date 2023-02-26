@@ -5,23 +5,67 @@ import { mergeTemplateSegments } from '../src/util/mergeTemplateSegments';
 import { tokenizer } from '../src/tokenizer';
 import { parseTokens } from '../src/parser';
 import { AttributeType, ChildType } from '../src/types/AbstractSyntaxTree';
+import { UnexpectedEOF } from '../src/errors/UnexpectedEOF';
+import { UnexpectedToken } from '../src/errors/UnexpectedToken';
 
 describe('parser', () => {
-  it('should return an AST', () => {
-    const ast = parseTokens(
-      tokenizer(
-        mergeTemplateSegments({
-          dynamic: [],
-          static: [''],
-        })
-      )
-    );
-    expect(ast).to.deep.equal({
-      kind: 'child',
-      type: ChildType.Node,
-      children: [],
-      attributes: [],
-    });
+  it('should throw when provided an empty input', () => {
+    expect(() => {
+      const ast = parseTokens(
+        tokenizer(
+          mergeTemplateSegments({
+            dynamic: [],
+            static: [''],
+          })
+        )
+      );
+    }).to.throw(UnexpectedEOF);
+  });
+
+  it('should throw when provided invalid syntax in input', () => {
+    expect(() => {
+      const ast = parseTokens(
+        tokenizer(
+          mergeTemplateSegments({
+            dynamic: [],
+            static: ['<div'],
+          })
+        )
+      );
+    }).to.throw(UnexpectedEOF);
+
+    expect(() => {
+      const ast = parseTokens(
+        tokenizer(
+          mergeTemplateSegments({
+            dynamic: [],
+            static: ['<div<'],
+          })
+        )
+      );
+    }).to.throw(UnexpectedToken);
+
+    expect(() => {
+      const ast = parseTokens(
+        tokenizer(
+          mergeTemplateSegments({
+            dynamic: [],
+            static: ['<div>'],
+          })
+        )
+      );
+    }).to.throw(UnexpectedEOF);
+
+    expect(() => {
+      const ast = parseTokens(
+        tokenizer(
+          mergeTemplateSegments({
+            dynamic: [],
+            static: ['<div'],
+          })
+        )
+      );
+    }).to.throw(UnexpectedEOF);
   });
 
   it('should join together dynamic and static parts in one AST', () => {

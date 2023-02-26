@@ -1,6 +1,9 @@
+import type { Token } from '../types/Token';
 import { UnexpectedEOF } from '../errors/UnexpectedEOF';
 
-export const createConsumeStream = <T>(gen: Generator<T>) => {
+export const createConsumeStream = <V, T extends Token<V>>(
+  gen: Generator<T>
+) => {
   let cache: { next?: IteratorResult<T>; previous?: IteratorResult<T> } = {};
 
   const next = () => {
@@ -21,13 +24,11 @@ export const createConsumeStream = <T>(gen: Generator<T>) => {
     get current() {
       if (api.done) {
         if ('previous' in cache && 'next' in cache) {
-          throw new UnexpectedEOF(
-            `${cache.previous?.value}${cache.next?.value}`
-          );
+          throw new UnexpectedEOF(`${cache.previous?.value?.value}`);
         } else if ('next' in cache) {
-          throw new UnexpectedEOF(`${cache.next?.value}`);
+          throw new UnexpectedEOF(`${cache.next?.value?.value}`);
         } else {
-          throw new UnexpectedEOF(`start of input`);
+          throw new UnexpectedEOF();
         }
       }
       return next().value as T;
