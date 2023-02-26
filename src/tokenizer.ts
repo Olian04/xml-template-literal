@@ -83,7 +83,9 @@ function* accumulateTextTokens(
 export function* tokenizer<T>(segments: SegmentStream<T>): Generator<Token<T>> {
   for (const segment of segments) {
     if (segment.type === 'static') {
-      yield* accumulateTextTokens(tokenizeString(segment.value));
+      yield* accumulateTextTokens(
+        tokenizeString(segment.value.replaceAll(/\n/g, ''))
+      );
     } else if (segment.type === 'dynamic') {
       yield {
         kind: TokenKind.Data,

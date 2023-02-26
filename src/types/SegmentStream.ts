@@ -1,3 +1,10 @@
-import { mergeTemplateSegments } from '../util/mergeTemplateSegments';
-
-export type SegmentStream<T> = ReturnType<typeof mergeTemplateSegments<T>>;
+export type SegmentStream<T> = (
+  | {
+      type: 'static';
+      value: string;
+    }
+  | {
+      type: 'dynamic';
+      value: T;
+    }
+)[];

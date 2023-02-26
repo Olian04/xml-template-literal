@@ -125,5 +125,9 @@ const parseChild = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
 };
 
 export const parseTokens = <T>(tokens: Generator<Token<T>>): AstChild<T> => {
-  return parseChild(createConsumeStream(tokens));
+  const tok = createConsumeStream(tokens);
+  if (tok.current.kind === TokenKind.Syntax && tok.current.value === ' ') {
+    tok.next();
+  }
+  return parseChild(tok);
 };

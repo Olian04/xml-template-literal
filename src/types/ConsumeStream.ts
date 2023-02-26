@@ -1,3 +1,5 @@
-import { createConsumeStream } from '../util/createConsumeStream';
-
-export type ConsumeStream<T> = ReturnType<typeof createConsumeStream<T>>;
+export type ConsumeStream<T> = {
+  next: () => void;
+  readonly done: boolean;
+  readonly current: T;
+};

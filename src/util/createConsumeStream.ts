@@ -1,9 +1,10 @@
 import type { Token } from '../types/Token';
 import { UnexpectedEOF } from '../errors/UnexpectedEOF';
+import { ConsumeStream } from '../types/ConsumeStream';
 
 export const createConsumeStream = <V, T extends Token<V>>(
   gen: Generator<T>
-) => {
+): ConsumeStream<T> => {
   let cache: { next?: IteratorResult<T>; previous?: IteratorResult<T> } = {};
 
   const next = () => {

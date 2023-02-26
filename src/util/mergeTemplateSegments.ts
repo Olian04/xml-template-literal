@@ -1,9 +1,11 @@
+import { SegmentStream } from '../types/SegmentStream';
+
 const isStaticSegment = (v: number) => v % 2 === 0;
 
 export const mergeTemplateSegments = <T>(templateSegments: {
   static: string[];
   dynamic: T[];
-}) =>
+}): SegmentStream<T> =>
   new Array(templateSegments.static.length + templateSegments.dynamic.length)
     .fill(0)
     .map((_, i) => {
