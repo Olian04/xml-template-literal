@@ -1,86 +1,126 @@
-import type { SyntaxToken } from './types/SyntaxToken';
-import type { Token } from './types/Token';
-
-import { UnexpectedToken } from './errors/UnexpectedToken';
+import {
+  Token,
+  SyntaxToken,
+  TokenKind,
+  StaticTokenContext,
+} from './types/Token';
 
 const isStaticSegment = (v: number) => v % 2 === 0;
+const clamp = (upper: number, lower: number, value: number) =>
+  value > upper ? upper : value < lower ? lower : value;
 
-export const tokenizer = <T>(segments: {
+export function* tokenizer<T>(originalSegments: {
   static: string[];
   dynamic: T[];
-}): Token<T>[] => {
-  const tokens: Token<T>[] = [];
-  let currentRow = 0;
-  let currentCol = 0;
-  let staticIndex = 0;
-  let dynamicIndex = 0;
-  for (let i = 0; i < segments.static.length + segments.dynamic.length; i++) {
-    if (isStaticSegment(i)) {
-      const staticSegment = segments.static[staticIndex];
-      let index = 0;
-      while (index < staticSegment.length) {
-        const maybeWhiteSpace = /^[ \t]+/.exec(staticSegment.substring(index));
-        if (maybeWhiteSpace) {
-          index += maybeWhiteSpace[0].length;
-          currentCol += maybeWhiteSpace[0].length;
-          continue;
-        }
-
-        const maybeNewline = /^\n+/.exec(staticSegment.substring(index));
-        if (maybeNewline) {
-          index += maybeNewline[0].length;
-          currentCol = 0;
-          currentRow += maybeNewline[0].length;
-          continue;
-        }
-
-        const maybeSyntax = /^[<>/="]/.exec(staticSegment.substring(index));
-        if (maybeSyntax) {
-          tokens.push({
-            kind: 'syntax',
-            value: maybeSyntax[0] as SyntaxToken['value'],
-            position: {
-              row: currentRow,
-              col: currentCol,
-            },
-          });
-          index += maybeSyntax[0].length;
-          currentCol += maybeSyntax[0].length;
-          continue;
-        }
-
-        const maybeSymbol = /^[^<>/="\s]+/.exec(staticSegment.substring(index));
-        if (maybeSymbol) {
-          tokens.push({
-            kind: 'symbol',
-            value: maybeSymbol[0],
-            position: {
-              row: currentRow,
-              col: currentCol,
-            },
-          });
-          index += maybeSymbol[0].length;
-          currentCol += maybeSymbol[0].length;
-          continue;
-        }
-
-        throw new UnexpectedToken(
-          `"${staticSegment.charAt(index)}" at ${currentRow}:${currentCol}`
-        );
+}): Generator<Token<T>> {
+  const segments = new Array(
+    originalSegments.static.length + originalSegments.dynamic.length
+  )
+    .fill(0)
+    .map((_, i) => {
+      if (isStaticSegment(i)) {
+        return {
+          type: 'static' as const,
+          value: originalSegments.static[Math.floor(i / 2)],
+        };
       }
-      staticIndex += 1;
+      return {
+        type: 'dynamic' as const,
+        value: originalSegments.dynamic[Math.floor(i / 2)],
+      };
+    });
+
+  const dynamicPlaceholder = '${...}';
+  const stringCode = segments
+    .map(({ type, value }) => (type === 'dynamic' ? dynamicPlaceholder : value))
+    .join('');
+
+  const codeContextWindowSize = 10;
+  let codeContextWindowIndex = 0;
+  for (const segment of segments) {
+    if (segment.type === 'static') {
+      let valueBuffer = '';
+      for (let index = 0; index < segment.value.length; index++) {
+        for (const [pattern, syntaxKind] of [
+          [/^\//, SyntaxToken.TagCloseIndicator],
+          [/^</, SyntaxToken.TagStart],
+          [/^>/, SyntaxToken.TagEnd],
+          [/^=/, SyntaxToken.AttributeAssign],
+          [/^"/, SyntaxToken.AttributeOpenOrClose],
+          [/^ +/, SyntaxToken.WhiteSpace],
+        ] as const) {
+          const maybeMatch = pattern.exec(segment.value.substring(index));
+          if (!maybeMatch) {
+            continue;
+          }
+          if (valueBuffer) {
+            yield {
+              kind: TokenKind.Static,
+              context: StaticTokenContext.Unknown,
+              value: valueBuffer,
+              codeContext: stringCode.substring(
+                clamp(
+                  0,
+                  stringCode.length,
+                  codeContextWindowIndex +
+                    index -
+                    valueBuffer.length -
+                    codeContextWindowSize / 2
+                ),
+                clamp(
+                  0,
+                  stringCode.length,
+                  codeContextWindowIndex +
+                    index -
+                    valueBuffer.length +
+                    codeContextWindowSize / 2
+                )
+              ),
+            };
+            valueBuffer = '';
+          }
+          yield {
+            kind: TokenKind.Syntax,
+            value: maybeMatch[0] as typeof syntaxKind,
+            codeContext: stringCode.substring(
+              clamp(
+                0,
+                stringCode.length,
+                codeContextWindowIndex + index - codeContextWindowSize / 2
+              ),
+              clamp(
+                0,
+                stringCode.length,
+                codeContextWindowIndex + index + codeContextWindowSize / 2
+              )
+            ),
+          };
+          index += maybeMatch[0].length;
+          break;
+        }
+        valueBuffer += segment.value[index];
+      }
+      codeContextWindowIndex += segment.value.length;
+    } else if (segment.type === 'dynamic') {
+      yield {
+        kind: TokenKind.Dynamic,
+        value: segment.value,
+        codeContext: stringCode.substring(
+          clamp(
+            0,
+            stringCode.length,
+            codeContextWindowIndex - codeContextWindowSize / 2
+          ),
+          clamp(
+            0,
+            stringCode.length,
+            codeContextWindowIndex + codeContextWindowSize / 2
+          )
+        ),
+      };
+      codeContextWindowIndex += dynamicPlaceholder.length;
     } else {
-      tokens.push({
-        kind: 'dynamic',
-        value: segments.dynamic[dynamicIndex],
-        position: {
-          row: currentRow,
-          col: currentCol,
-        },
-      });
-      currentCol += 1;
-      dynamicIndex += 1;
+      throw new Error(`Unknown segment: ${segment}`);
     }
   }
-  return tokens;
-};
+}

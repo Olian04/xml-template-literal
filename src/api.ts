@@ -1,3 +1,3 @@
-export type { AstRoot as XML } from './types/AstRoot';
+// export type { AstRoot as XML } from './types/AstRoot';
 
-export { xml } from './xml';
+// export { xml } from './xml';
