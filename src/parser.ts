@@ -2,6 +2,7 @@ import type { ConsumeStream } from './types/ConsumeStream';
 import { assertSyntax } from './util/assertSyntax';
 import {
   AstAttribute,
+  AstAttributeComposite,
   AstChild,
   AstKind,
   AttributeType,
@@ -32,12 +33,46 @@ const parseAttribute = <T>(tok: ConsumeStream<Token<T>>): AstAttribute<T> => {
   }
   assertSyntax('"', tok.current);
   nextToken(tok);
+  const parts: AstAttributeComposite<T>[] = [];
   let value = '';
   while (tok.current.value !== '"') {
-    value += tok.current.value;
+    // @ts-ignore
+    if (tok.current.kind === TokenKind.Data) {
+      if (value.length > 0) {
+        parts.push({
+          kind: AstKind.Composite,
+          type: AttributeType.Text,
+          value: value,
+        });
+        value = '';
+      }
+      // @ts-ignore
+      parts.push({
+        kind: AstKind.Composite,
+        type: AttributeType.Data,
+        // @ts-ignore
+        value: tok.current.value,
+      });
+    } else {
+      value += tok.current.value;
+    }
     nextToken(tok);
   }
   assertSyntax('"', tok.current);
+
+  if (parts.length > 0) {
+    parts.push({
+      kind: AstKind.Composite,
+      type: AttributeType.Text,
+      value: value,
+    });
+    return {
+      kind: AstKind.Attribute,
+      type: AttributeType.Composite,
+      key,
+      value: parts,
+    };
+  }
   return {
     kind: AstKind.Attribute,
     type: AttributeType.Text,

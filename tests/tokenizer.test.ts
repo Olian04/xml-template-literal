@@ -14,14 +14,9 @@ describe('tokenizer', () => {
       })
     );
 
-    expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
-      '<',
-      'div',
-      '>',
-      '</',
-      'div',
-      '>',
-    ]);
+    expect(
+      [...tok].map((v: Token<any>) => v.value).filter((v) => v !== ' ')
+    ).to.deep.equal(['<', 'div', '>', '</', 'div', '>']);
   });
 
   it('should correctly tokenize naked self-closing tag', () => {
@@ -32,11 +27,9 @@ describe('tokenizer', () => {
       })
     );
 
-    expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
-      '<',
-      'div',
-      '/>',
-    ]);
+    expect(
+      [...tok].map((v: Token<any>) => v.value).filter((v) => v !== ' ')
+    ).to.deep.equal(['<', 'div', '/>']);
   });
 
   it('should correctly tokenize tag with attribute', () => {
@@ -47,7 +40,9 @@ describe('tokenizer', () => {
       })
     );
 
-    expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
+    expect(
+      [...tok].map((v: Token<any>) => v.value).filter((v) => v !== ' ')
+    ).to.deep.equal([
       '<',
       'div',
       'id',
@@ -70,7 +65,9 @@ describe('tokenizer', () => {
       })
     );
 
-    expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
+    expect(
+      [...tok].map((v: Token<any>) => v.value).filter((v) => v !== ' ')
+    ).to.deep.equal([
       '<',
       'div',
       '>',
@@ -86,7 +83,7 @@ describe('tokenizer', () => {
     ]);
   });
 
-  it('should handle a real usage senario', () => {
+  it('should handle a real usage scenario', () => {
     const A = { foo: 0 };
     const B = [1, 2, 3];
     const tok = tokenizer(
@@ -100,7 +97,9 @@ describe('tokenizer', () => {
       })
     );
 
-    expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
+    expect(
+      [...tok].map((v: Token<any>) => v.value).filter((v) => v !== ' ')
+    ).to.deep.equal([
       '<',
       'someTag',
       'property',

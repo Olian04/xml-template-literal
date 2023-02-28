@@ -4,7 +4,11 @@ import { expect } from 'chai';
 import { mergeTemplateSegments } from '../src/util/mergeTemplateSegments';
 import { tokenizer } from '../src/tokenizer';
 import { parseTokens } from '../src/parser';
-import { AttributeType, ChildType, AstKind } from '../src/types/AbstractSyntaxTree';
+import {
+  AttributeType,
+  ChildType,
+  AstKind,
+} from '../src/types/AbstractSyntaxTree';
 import { UnexpectedEOF } from '../src/errors/UnexpectedEOF';
 import { UnexpectedToken } from '../src/errors/UnexpectedToken';
 
@@ -100,7 +104,7 @@ describe('parser', () => {
     });
   });
 
-  it('should correctly tokenize tag with children', () => {
+  it('should correctly parse tag with children', () => {
     const ast = parseTokens(
       tokenizer(
         mergeTemplateSegments({
@@ -127,7 +131,7 @@ describe('parser', () => {
     });
   });
 
-  it('should correctly tokenize ', () => {
+  it('should correctly parse composite property value', () => {
     const A = { foo: 0 };
 
     const ast = parseTokens(
@@ -149,26 +153,25 @@ describe('parser', () => {
           type: AttributeType.Composite,
           key: 'class',
           value: [
-              {
-                kind: AstKind.Composite,
-                type: AttributeType.Text,
-                value: 'box ',
-              },
-              {
-                kind: AstKind.Composite,
-                type: AttributeType.Data,
-                value: A,
-              },
-              {
-                kind: AstKind.Composite,
-                type: AttributeType.Text,
-                value: ' lg',
-              }
-          ]
-        }
+            {
+              kind: AstKind.Composite,
+              type: AttributeType.Text,
+              value: 'box ',
+            },
+            {
+              kind: AstKind.Composite,
+              type: AttributeType.Data,
+              value: A,
+            },
+            {
+              kind: AstKind.Composite,
+              type: AttributeType.Text,
+              value: ' lg',
+            },
+          ],
+        },
       ],
       children: [],
     });
-
-  })
+  });
 });

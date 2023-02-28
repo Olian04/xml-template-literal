@@ -79,33 +79,6 @@ function* accumulateTextTokens(
   }
 }
 
-function* accumulateWhitespaceTokens(
-  tokens: Generator<SyntaxToken | TextToken>
-): Generator<SyntaxToken | TextToken> {
-  let whitespaceAccumulator = '';
-  for (const tok of tokens) {
-    if (tok.kind === TokenKind.Syntax && tok.value === ' ') {
-      whitespaceAccumulator += tok.value;
-    } else {
-      if (whitespaceAccumulator.length > 0) {
-        yield {
-          kind: TokenKind.Syntax,
-          value: ' ',
-        };
-        whitespaceAccumulator = '';
-      }
-      yield tok;
-    }
-  }
-  if (whitespaceAccumulator.length > 0) {
-    yield {
-      kind: TokenKind.Syntax,
-      value: ' ',
-    };
-    whitespaceAccumulator = '';
-  }
-}
-
 function* produceJoinedTokens(
   tokens: Generator<SyntaxToken | TextToken>
 ): Generator<SyntaxToken | TextToken> {
@@ -158,13 +131,43 @@ function* stripOutWhitespace(
   }
 }
 
+function* includeSpacesInText(
+  tokens: Generator<SyntaxToken | TextToken>
+): Generator<SyntaxToken | TextToken> {
+  let isInValue = false;
+  let value = '';
+  for (const tok of tokens) {
+    if (tok.kind === TokenKind.Syntax && tok.value === '"') {
+      isInValue = !isInValue;
+      if (value.length > 0) {
+        yield {
+          kind: TokenKind.Text,
+          value: value,
+        };
+        value = '';
+      }
+      yield tok;
+    } else if (isInValue) {
+      value += tok.value;
+    } else {
+      yield tok;
+    }
+  }
+  if (value.length > 0) {
+    yield {
+      kind: TokenKind.Text,
+      value: value,
+    };
+  }
+}
+
 export function* tokenizer<T>(segments: SegmentStream<T>): Generator<Token<T>> {
   for (const segment of segments) {
     if (segment.type === SegmentType.Static) {
       yield* produceJoinedTokens(
         stripOutWhitespace(
           accumulateTextTokens(
-            accumulateWhitespaceTokens(tokenizeString(segment.value))
+            includeSpacesInText(tokenizeString(segment.value))
           )
         )
       );
