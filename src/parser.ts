@@ -1,11 +1,12 @@
+import type { ConsumeStream } from './types/ConsumeStream';
 import { assertSyntax } from './util/assertSyntax';
 import {
   AstAttribute,
   AstChild,
+  AstKind,
   AttributeType,
   ChildType,
 } from './types/AbstractSyntaxTree';
-import { ConsumeStream } from './types/ConsumeStream';
 import { Token, TokenKind } from './types/Token';
 import { assert } from './util/assert';
 
@@ -23,7 +24,7 @@ const parseAttribute = <T>(tok: ConsumeStream<Token<T>>): AstAttribute<T> => {
   nextToken(tok);
   if (tok.current.kind === TokenKind.Data) {
     return {
-      kind: 'attribute',
+      kind: AstKind.Attribute,
       type: AttributeType.Data,
       key,
       value: tok.current.value,
@@ -38,7 +39,7 @@ const parseAttribute = <T>(tok: ConsumeStream<Token<T>>): AstAttribute<T> => {
   }
   assertSyntax('"', tok.current);
   return {
-    kind: 'attribute',
+    kind: AstKind.Attribute,
     type: AttributeType.Text,
     key,
     value,
@@ -60,7 +61,7 @@ const parseChildNode = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
     assertSyntax('/>', tok.current);
     nextToken(tok);
     return {
-      kind: 'child',
+      kind: AstKind.Child,
       type: ChildType.Node,
       tag,
       attributes,
@@ -80,7 +81,7 @@ const parseChildNode = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
   nextToken(tok);
   assertSyntax('>', tok.current);
   return {
-    kind: 'child',
+    kind: AstKind.Child,
     type: ChildType.Node,
     tag,
     attributes,
@@ -91,14 +92,14 @@ const parseChildNode = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
 const parseChild = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
   if (tok.current.kind === TokenKind.Data) {
     return {
-      kind: 'child',
+      kind: AstKind.Child,
       type: ChildType.Data,
       value: tok.current.value,
     };
   }
   if (tok.current.kind === TokenKind.Text) {
     return {
-      kind: 'child',
+      kind: AstKind.Child,
       type: ChildType.Text,
       value: tok.current.value,
     };

@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { mergeTemplateSegments } from '../src/util/mergeTemplateSegments';
 import { tokenizer } from '../src/tokenizer';
 import { parseTokens } from '../src/parser';
-import { AttributeType, ChildType } from '../src/types/AbstractSyntaxTree';
+import { AttributeType, ChildType, AstKind } from '../src/types/AbstractSyntaxTree';
 import { UnexpectedEOF } from '../src/errors/UnexpectedEOF';
 import { UnexpectedToken } from '../src/errors/UnexpectedToken';
 
@@ -79,18 +79,18 @@ describe('parser', () => {
       )
     );
     expect(ast).to.deep.equal({
-      kind: 'child',
+      kind: AstKind.Child,
       type: ChildType.Node,
       tag: 'someTag',
       attributes: [
         {
-          kind: 'attribute',
+          kind: AstKind.Attribute,
           type: AttributeType.Text,
           key: 'property',
           value: 'value',
         },
         {
-          kind: 'attribute',
+          kind: AstKind.Attribute,
           type: AttributeType.Data,
           key: 'prop',
           value: A,
@@ -111,13 +111,13 @@ describe('parser', () => {
     );
 
     expect(ast).to.deep.equal({
-      kind: 'child',
+      kind: AstKind.Child,
       type: ChildType.Node,
       tag: 'div',
       attributes: [],
       children: [
         {
-          kind: 'child',
+          kind: AstKind.Child,
           type: ChildType.Node,
           tag: 'p',
           attributes: [],
@@ -140,28 +140,28 @@ describe('parser', () => {
     );
 
     expect(ast).to.deep.equal({
-      kind: 'child',
-      type: 'Node',
+      kind: AstKind.Child,
+      type: ChildType.Node,
       tag: 'div',
       attributes: [
         {
-          kind: 'attribute',
-          type: 'Composite',
+          kind: AstKind.Attribute,
+          type: AttributeType.Composite,
           key: 'class',
           value: [
               {
-                kind: 'composite',
-                type: 'Text',
+                kind: AstKind.Composite,
+                type: AttributeType.Text,
                 value: 'box ',
               },
               {
-                kind: 'composite',
-                type: 'Data',
+                kind: AstKind.Composite,
+                type: AttributeType.Data,
                 value: A,
               },
               {
-                kind: 'composite',
-                type: 'Text',
+                kind: AstKind.Composite,
+                type: AttributeType.Text,
                 value: ' lg',
               }
           ]

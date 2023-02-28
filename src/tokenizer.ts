@@ -1,4 +1,4 @@
-import { SegmentStream } from './types/SegmentStream';
+import { SegmentStream, SegmentType } from './types/SegmentStream';
 import { Token, SyntaxToken, TokenKind, TextToken } from './types/Token';
 
 function* tokenizeString(input: string): Generator<SyntaxToken | TextToken> {
@@ -160,7 +160,7 @@ function* stripOutWhitespace(
 
 export function* tokenizer<T>(segments: SegmentStream<T>): Generator<Token<T>> {
   for (const segment of segments) {
-    if (segment.type === 'static') {
+    if (segment.type === SegmentType.Static) {
       yield* produceJoinedTokens(
         stripOutWhitespace(
           accumulateTextTokens(
@@ -168,7 +168,7 @@ export function* tokenizer<T>(segments: SegmentStream<T>): Generator<Token<T>> {
           )
         )
       );
-    } else if (segment.type === 'dynamic') {
+    } else if (segment.type === SegmentType.Dynamic) {
       yield {
         kind: TokenKind.Data,
         value: segment.value,
