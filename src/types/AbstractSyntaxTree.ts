@@ -7,6 +7,7 @@ export enum ChildType {
 export enum AttributeType {
   Text = 'Text',
   Data = 'Data',
+  Composite = 'Composite',
 }
 
 export type AstChild<T> =
@@ -40,4 +41,22 @@ export type AstAttribute<T> =
       type: AttributeType.Data;
       key: string;
       value: T;
+    }
+  | {
+      kind: 'attribute';
+      type: AttributeType.Composite;
+      key: string;
+      value: AstAttributeComposite<T>[];
     };
+
+export type AstAttributeComposite<T> =
+    | {
+        kind: 'composite',
+        type: AttributeType.Text,
+        value: string;
+      }
+    | {
+        kind: 'composite',
+        type: AttributeType.Data,
+        value: T;
+      };

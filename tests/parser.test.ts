@@ -126,4 +126,49 @@ describe('parser', () => {
       ],
     });
   });
+
+  it('should correctly tokenize ', () => {
+    const A = { foo: 0 };
+
+    const ast = parseTokens(
+      tokenizer(
+        mergeTemplateSegments({
+          dynamic: [A],
+          static: ['<div class="box ', ' lg" />'],
+        })
+      )
+    );
+
+    expect(ast).to.deep.equal({
+      kind: 'child',
+      type: 'Node',
+      tag: 'div',
+      attributes: [
+        {
+          kind: 'attribute',
+          type: 'Composite',
+          key: 'class',
+          value: [
+              {
+                kind: 'composite',
+                type: 'Text',
+                value: 'box ',
+              },
+              {
+                kind: 'composite',
+                type: 'Data',
+                value: A,
+              },
+              {
+                kind: 'composite',
+                type: 'Text',
+                value: ' lg',
+              }
+          ]
+        }
+      ],
+      children: [],
+    });
+
+  })
 });
