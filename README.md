@@ -1,4 +1,5 @@
 [![Latest released version](https://img.shields.io/npm/v/xml-template-literal)](https://www.npmjs.com/package/xml-template-literal)
+[![Minified and gzipped bundle size](https://img.shields.io/bundlephobia/minzip/xml-template-literal)](https://bundlephobia.com/package/xml-template-literal)
 ![Type support](https://img.shields.io/npm/types/xml-template-literal)
 [![Downloads from NPM](https://img.shields.io/npm/dm/xml-template-literal?label=downloads%20npm)](https://www.npmjs.com/package/xml-template-literal)
 [![Downloads from JSDeliver](https://img.shields.io/jsdelivr/npm/hm/xml-template-literal?label=downloads%20jsDelivr)](https://www.jsdelivr.com/package/npm/xml-template-literal)
