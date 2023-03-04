@@ -3,6 +3,7 @@
 .mocharc.js
 rollup.config.mjs
 tsconfig.json
+tsconfig.prod.json
 .vscode
 .circleci
 demos/
