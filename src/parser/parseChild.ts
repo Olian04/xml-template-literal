@@ -24,7 +24,6 @@ export const parseChildNode = <T>(
   }
   if (tok.current.value === '/>') {
     assertSyntax('/>', tok.current);
-    nextToken(tok);
     return {
       kind: AstKind.Child,
       type: ChildType.Node,

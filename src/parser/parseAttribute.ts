@@ -36,7 +36,7 @@ export const parseAttributeValue = <T>(
     } else {
       value += tok.current.value;
     }
-    nextToken(tok);
+    nextToken(tok, false);
   }
   assertSyntax('"', tok.current);
 

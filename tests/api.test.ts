@@ -9,7 +9,8 @@ describe('api', () => {
 
     const A = { foo: 0 };
     const B = [1, 2, 3];
-    const out = xml<typeof A | typeof B>`
+    const C = 42;
+    const out = xml<typeof A | typeof B | typeof C>`
       <someTag
         property="value"
         prop=${A}
@@ -19,6 +20,7 @@ describe('api', () => {
       </someTag>
       <greet name="World" />
       <greet name="World"></greet>
+      <greet name="Foo ${C} Bar"></greet>
     `;
 
     expect(typeof out).to.equal('object');
