@@ -1,17 +1,26 @@
-import {
-  AstAttribute,
-  AstChild,
-  AttributeType,
-  ChildType,
-} from './types/AbstractSyntaxTree';
-import { ConsumeStream } from './types/ConsumeStream';
-import { SyntaxToken, Token, TokenKind } from './types/Token';
-import { assert } from './util/assert';
+import type { AstAttribute, AstChild } from './types/AbstractSyntaxTree';
+import type { ConsumeStream } from './types/ConsumeStream';
+import type { SyntaxToken, Token } from './types/Token';
 
+import { TokenKind } from './types/Token';
+import { AttributeType, ChildType } from './types/AbstractSyntaxTree';
+import { assert } from './util/assert';
 import { createConsumeStream } from './util/createConsumeStream';
 
-const nextToken = (tok: ConsumeStream<Token<unknown>>) => {
+const nextToken = (
+  tok: ConsumeStream<Token<unknown>>,
+  shouldSkipWhitespace = true
+) => {
   tok.next();
+  if (shouldSkipWhitespace) {
+    skipWhitespace(tok);
+  }
+};
+
+const skipWhitespace = (tok: ConsumeStream<Token<unknown>>) => {
+  while (tok.current.kind === TokenKind.Whitespace) {
+    tok.next();
+  }
 };
 
 const assertSyntax = (
@@ -114,5 +123,7 @@ const parseChild = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
 };
 
 export const parseTokens = <T>(tokens: Generator<Token<T>>): AstChild<T> => {
-  return parseChild(createConsumeStream(tokens));
+  const tok = createConsumeStream(tokens);
+  skipWhitespace(tok);
+  return parseChild(tok);
 };

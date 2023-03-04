@@ -1,7 +1,7 @@
 import { SegmentStream } from './types/SegmentStream';
-import { Token, SyntaxToken, TokenKind, TextToken } from './types/Token';
+import { Token, TokenKind, StaticToken } from './types/Token';
 
-function* tokenizeString(input: string): Generator<SyntaxToken | TextToken> {
+function* tokenizeString(input: string): Generator<StaticToken> {
   for (const char of input) {
     switch (char) {
       case '<':
@@ -35,11 +35,26 @@ function* tokenizeString(input: string): Generator<SyntaxToken | TextToken> {
         };
         break;
       case '\n':
-      case '\t':
+        yield {
+          kind: TokenKind.Whitespace,
+          value: '\n',
+        };
+        break;
       case '\r':
+        yield {
+          kind: TokenKind.Whitespace,
+          value: '\r',
+        };
+        break;
+      case '\t':
+        yield {
+          kind: TokenKind.Whitespace,
+          value: '\t',
+        };
+        break;
       case ' ':
         yield {
-          kind: TokenKind.Syntax,
+          kind: TokenKind.Whitespace,
           value: ' ',
         };
         break;
@@ -54,11 +69,11 @@ function* tokenizeString(input: string): Generator<SyntaxToken | TextToken> {
 }
 
 function* accumulateTextTokens(
-  tokens: Generator<SyntaxToken | TextToken>
-): Generator<SyntaxToken | TextToken> {
+  tokens: Generator<StaticToken>
+): Generator<StaticToken> {
   let textAccumulator = '';
   for (const tok of tokens) {
-    if (tok.kind === TokenKind.Syntax) {
+    if (tok.kind !== TokenKind.Text) {
       if (textAccumulator) {
         yield {
           kind: TokenKind.Text,
@@ -79,39 +94,12 @@ function* accumulateTextTokens(
   }
 }
 
-function* accumulateWhitespaceTokens(
-  tokens: Generator<SyntaxToken | TextToken>
-): Generator<SyntaxToken | TextToken> {
-  let whitespaceAccumulator = '';
-  for (const tok of tokens) {
-    if (tok.kind === TokenKind.Syntax && tok.value === ' ') {
-      whitespaceAccumulator += tok.value;
-    } else {
-      if (whitespaceAccumulator.length > 0) {
-        yield {
-          kind: TokenKind.Syntax,
-          value: ' ',
-        };
-        whitespaceAccumulator = '';
-      }
-      yield tok;
-    }
-  }
-  if (whitespaceAccumulator.length > 0) {
-    yield {
-      kind: TokenKind.Syntax,
-      value: ' ',
-    };
-    whitespaceAccumulator = '';
-  }
-}
-
 function* produceJoinedTokens(
-  tokens: Generator<SyntaxToken | TextToken>
-): Generator<SyntaxToken | TextToken> {
-  let tok: IteratorResult<SyntaxToken | TextToken, any>;
-  let curr_token: SyntaxToken | TextToken | undefined = undefined;
-  let prev_token: SyntaxToken | TextToken | undefined = undefined;
+  tokens: Generator<StaticToken>
+): Generator<StaticToken> {
+  let tok: IteratorResult<StaticToken, any>;
+  let curr_token: StaticToken | undefined = undefined;
+  let prev_token: StaticToken | undefined = undefined;
   while (!(tok = tokens.next()).done) {
     prev_token = curr_token;
     curr_token = tok.value;
@@ -148,25 +136,11 @@ function* produceJoinedTokens(
   }
 }
 
-function* stripOutWhitespace(
-  tokens: Generator<SyntaxToken | TextToken>
-): Generator<SyntaxToken | TextToken> {
-  for (const tok of tokens) {
-    if (tok.value !== ' ') {
-      yield tok;
-    }
-  }
-}
-
 export function* tokenizer<T>(segments: SegmentStream<T>): Generator<Token<T>> {
   for (const segment of segments) {
     if (segment.type === 'static') {
       yield* produceJoinedTokens(
-        stripOutWhitespace(
-          accumulateTextTokens(
-            accumulateWhitespaceTokens(tokenizeString(segment.value))
-          )
-        )
+        accumulateTextTokens(tokenizeString(segment.value))
       );
     } else if (segment.type === 'dynamic') {
       yield {
