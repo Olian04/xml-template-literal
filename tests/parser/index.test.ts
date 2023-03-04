@@ -8,7 +8,7 @@ import { AttributeType, ChildType, AstKind } from '!types/AbstractSyntaxTree';
 import { UnexpectedEOF } from '!errors/UnexpectedEOF';
 import { UnexpectedToken } from '!errors/UnexpectedToken';
 
-describe('[test] parser', () => {
+describe('parser', () => {
   it('should throw when provided an empty input', () => {
     expect(() => {
       const ast = parseTokens(

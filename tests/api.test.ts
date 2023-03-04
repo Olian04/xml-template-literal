@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { xml, parseXml } from '!api';
 
-describe('[test] api', () => {
+describe('api', () => {
   it('should expose XML template literal function', () => {
     expect(typeof xml).to.equal('function');
 

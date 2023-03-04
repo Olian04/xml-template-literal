@@ -5,7 +5,7 @@ import type { Token } from '!types/Token';
 import { tokenizer } from '!tokenizer';
 import { mergeTemplateSegments } from '!util/mergeTemplateSegments';
 
-describe('[test] tokenizer', () => {
+describe('tokenizer', () => {
   it('should correctly tokenize naked tag', () => {
     const tok = tokenizer(
       mergeTemplateSegments({
@@ -66,9 +66,7 @@ describe('[test] tokenizer', () => {
       })
     );
 
-    expect(
-      [...tok].map((v: Token<any>) => v.value).filter((v) => v !== ' ')
-    ).to.deep.equal([
+    expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
       '<',
       'div',
       ' ',
@@ -92,9 +90,7 @@ describe('[test] tokenizer', () => {
       })
     );
 
-    expect(
-      [...tok].map((v: Token<any>) => v.value).filter((v) => v !== ' ')
-    ).to.deep.equal([
+    expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
       '<',
       'div',
       '>',
