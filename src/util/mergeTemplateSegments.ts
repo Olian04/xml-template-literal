@@ -1,4 +1,4 @@
-import { SegmentStream } from '../types/SegmentStream';
+import { SegmentStream, SegmentType } from '../types/SegmentStream';
 
 const isStaticSegment = (v: number) => v % 2 === 0;
 
@@ -11,13 +11,13 @@ export const mergeTemplateSegments = <T>(templateSegments: {
     .map((_, i) => {
       if (isStaticSegment(i)) {
         return {
-          type: 'static' as const,
+          type: SegmentType.Static,
           value: templateSegments.static[Math.floor(i / 2)],
-        };
+        } as const;
       }
       return {
-        type: 'dynamic' as const,
+        type: SegmentType.Dynamic,
         value: templateSegments.dynamic[Math.floor(i / 2)],
-      };
+      } as const;
     })
     .filter((seg) => Boolean(seg.value));

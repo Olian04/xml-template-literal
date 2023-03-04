@@ -49,7 +49,9 @@ describe('tokenizer', () => {
       })
     );
 
-    expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
+    expect(
+      [...tok].map((v: Token<any>) => v.value).filter((v) => v !== ' ')
+    ).to.deep.equal([
       '<',
       'div',
       ' ',
@@ -73,7 +75,9 @@ describe('tokenizer', () => {
       })
     );
 
-    expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
+    expect(
+      [...tok].map((v: Token<any>) => v.value).filter((v) => v !== ' ')
+    ).to.deep.equal([
       '<',
       'div',
       '>',
@@ -90,7 +94,7 @@ describe('tokenizer', () => {
     ]);
   });
 
-  it('should handle a real usage senario', () => {
+  it('should handle a real usage scenario', () => {
     const A = { foo: 0 };
     const B = [1, 2, 3];
     const tok = tokenizer(

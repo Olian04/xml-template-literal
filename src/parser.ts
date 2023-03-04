@@ -23,38 +23,64 @@ const skipWhitespace = (tok: ConsumeStream<Token<unknown>>) => {
   }
 };
 
-const assertSyntax = (
-  tok: ConsumeStream<Token<unknown>>,
-  value: SyntaxToken['value']
-) => {
-  assert('value', value, tok.current);
-  assert('kind', TokenKind.Syntax, tok.current);
-};
-
 const parseAttribute = <T>(tok: ConsumeStream<Token<T>>): AstAttribute<T> => {
   assert('kind', TokenKind.Text, tok.current);
   const key = tok.current.value as string;
   nextToken(tok);
-  assertSyntax(tok, '=');
+  assertSyntax('=', tok.current);
   nextToken(tok);
   if (tok.current.kind === TokenKind.Data) {
     return {
-      kind: 'attribute',
+      kind: AstKind.Attribute,
       type: AttributeType.Data,
       key,
       value: tok.current.value,
     };
   }
-  assertSyntax(tok, '"');
+  assertSyntax('"', tok.current);
   nextToken(tok);
+  const parts: AstAttributeComposite<T>[] = [];
   let value = '';
   while (tok.current.value !== '"') {
-    value += tok.current.value;
+    // @ts-ignore
+    if (tok.current.kind === TokenKind.Data) {
+      if (value.length > 0) {
+        parts.push({
+          kind: AstKind.Composite,
+          type: AttributeType.Text,
+          value: value,
+        });
+        value = '';
+      }
+      // @ts-ignore
+      parts.push({
+        kind: AstKind.Composite,
+        type: AttributeType.Data,
+        // @ts-ignore
+        value: tok.current.value,
+      });
+    } else {
+      value += tok.current.value;
+    }
     nextToken(tok);
   }
-  assertSyntax(tok, '"');
+  assertSyntax('"', tok.current);
+
+  if (parts.length > 0) {
+    parts.push({
+      kind: AstKind.Composite,
+      type: AttributeType.Text,
+      value: value,
+    });
+    return {
+      kind: AstKind.Attribute,
+      type: AttributeType.Composite,
+      key,
+      value: parts,
+    };
+  }
   return {
-    kind: 'attribute',
+    kind: AstKind.Attribute,
     type: AttributeType.Text,
     key,
     value,
@@ -62,7 +88,7 @@ const parseAttribute = <T>(tok: ConsumeStream<Token<T>>): AstAttribute<T> => {
 };
 
 const parseChildNode = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
-  assertSyntax(tok, '<');
+  assertSyntax('<', tok.current);
   nextToken(tok);
   assert('kind', TokenKind.Text, tok.current);
   const tag = tok.current.value as string;
@@ -73,30 +99,30 @@ const parseChildNode = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
     nextToken(tok);
   }
   if (tok.current.value === '/>') {
-    assertSyntax(tok, '/>');
+    assertSyntax('/>', tok.current);
     nextToken(tok);
     return {
-      kind: 'child',
+      kind: AstKind.Child,
       type: ChildType.Node,
       tag,
       attributes,
       children: [],
     };
   }
-  assertSyntax(tok, '>');
+  assertSyntax('>', tok.current);
   nextToken(tok);
   const children: AstChild<T>[] = [];
   while (tok.current.value !== '</') {
     children.push(parseChild(tok));
     nextToken(tok);
   }
-  assertSyntax(tok, '</');
+  assertSyntax('</', tok.current);
   nextToken(tok);
   assert('value', tag, tok.current);
   nextToken(tok);
-  assertSyntax(tok, '>');
+  assertSyntax('>', tok.current);
   return {
-    kind: 'child',
+    kind: AstKind.Child,
     type: ChildType.Node,
     tag,
     attributes,
@@ -107,14 +133,14 @@ const parseChildNode = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
 const parseChild = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
   if (tok.current.kind === TokenKind.Data) {
     return {
-      kind: 'child',
+      kind: AstKind.Child,
       type: ChildType.Data,
       value: tok.current.value,
     };
   }
   if (tok.current.kind === TokenKind.Text) {
     return {
-      kind: 'child',
+      kind: AstKind.Child,
       type: ChildType.Text,
       value: tok.current.value,
     };

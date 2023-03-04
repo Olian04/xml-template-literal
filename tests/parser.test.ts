@@ -4,7 +4,11 @@ import { expect } from 'chai';
 import { mergeTemplateSegments } from '../src/util/mergeTemplateSegments';
 import { tokenizer } from '../src/tokenizer';
 import { parseTokens } from '../src/parser';
-import { AttributeType, ChildType } from '../src/types/AbstractSyntaxTree';
+import {
+  AttributeType,
+  ChildType,
+  AstKind,
+} from '../src/types/AbstractSyntaxTree';
 import { UnexpectedEOF } from '../src/errors/UnexpectedEOF';
 import { UnexpectedToken } from '../src/errors/UnexpectedToken';
 
@@ -79,18 +83,18 @@ describe('parser', () => {
       )
     );
     expect(ast).to.deep.equal({
-      kind: 'child',
+      kind: AstKind.Child,
       type: ChildType.Node,
       tag: 'someTag',
       attributes: [
         {
-          kind: 'attribute',
+          kind: AstKind.Attribute,
           type: AttributeType.Text,
           key: 'property',
           value: 'value',
         },
         {
-          kind: 'attribute',
+          kind: AstKind.Attribute,
           type: AttributeType.Data,
           key: 'prop',
           value: A,
@@ -100,7 +104,7 @@ describe('parser', () => {
     });
   });
 
-  it('should correctly tokenize tag with children', () => {
+  it('should correctly parse tag with children', () => {
     const ast = parseTokens(
       tokenizer(
         mergeTemplateSegments({
@@ -111,19 +115,63 @@ describe('parser', () => {
     );
 
     expect(ast).to.deep.equal({
-      kind: 'child',
+      kind: AstKind.Child,
       type: ChildType.Node,
       tag: 'div',
       attributes: [],
       children: [
         {
-          kind: 'child',
+          kind: AstKind.Child,
           type: ChildType.Node,
           tag: 'p',
           attributes: [],
           children: [],
         },
       ],
+    });
+  });
+
+  it('should correctly parse composite property value', () => {
+    const A = { foo: 0 };
+
+    const ast = parseTokens(
+      tokenizer(
+        mergeTemplateSegments({
+          dynamic: [A],
+          static: ['<div class="box ', ' lg" />'],
+        })
+      )
+    );
+
+    expect(ast).to.deep.equal({
+      kind: AstKind.Child,
+      type: ChildType.Node,
+      tag: 'div',
+      attributes: [
+        {
+          kind: AstKind.Attribute,
+          type: AttributeType.Composite,
+          key: 'class',
+          value: [
+            {
+              kind: AstKind.Composite,
+              type: AttributeType.Text,
+              value: 'box ',
+            },
+            {
+              kind: AstKind.Composite,
+              type: AttributeType.Data,
+              value: A,
+            },
+            {
+              kind: AstKind.Composite,
+              type: AttributeType.Text,
+              value: ' lg',
+            },
+          ],
+        },
+      ],
+      children: [],
     });
   });
 });

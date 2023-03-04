@@ -1,10 +1,15 @@
+export const enum SegmentType {
+  Static = 'Static',
+  Dynamic = 'Dynamic',
+}
+
 export type SegmentStream<T> = (
   | {
-      type: 'static';
+      type: SegmentType.Static;
       value: string;
     }
   | {
-      type: 'dynamic';
+      type: SegmentType.Dynamic;
       value: T;
     }
 )[];

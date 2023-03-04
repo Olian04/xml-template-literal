@@ -138,11 +138,11 @@ function* produceJoinedTokens(
 
 export function* tokenizer<T>(segments: SegmentStream<T>): Generator<Token<T>> {
   for (const segment of segments) {
-    if (segment.type === 'static') {
+    if (segment.type === SegmentType.Static) {
       yield* produceJoinedTokens(
         accumulateTextTokens(tokenizeString(segment.value))
       );
-    } else if (segment.type === 'dynamic') {
+    } else if (segment.type === SegmentType.Dynamic) {
       yield {
         kind: TokenKind.Data,
         value: segment.value,
