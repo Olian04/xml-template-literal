@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "es6",
     "module": "CommonJS",
+    "moduleResolution": "node",
     "lib": ["esnext", "dom"],
     "outDir": "dist/",
     "declaration": true,
@@ -12,9 +13,9 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "strict": true,
-    "baseUrl": "./",
+    "baseUrl": "./src/",
     "paths": {
-      "!*": ["src/*"]
+      "!*": ["*"]
     }
   },
   "include": ["src/**/*.ts", "tests/**/*.test.ts"]

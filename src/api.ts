@@ -2,7 +2,7 @@ import { parseTokens } from '!parser/index';
 import { tokenizer } from '!tokenizer/index';
 import { mergeTemplateSegments } from '!util/mergeTemplateSegments';
 
-export type {
+export {
   AstKind,
   AstChild,
   AstAttribute,
