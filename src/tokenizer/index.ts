@@ -1,11 +1,11 @@
-import type { SegmentStream } from '@/types/SegmentStream';
-import type { Token } from '@/types/Token';
+import type { SegmentStream } from '!types/SegmentStream';
+import type { Token } from '!types/Token';
 
-import { SegmentType } from '@/types/SegmentStream';
-import { TokenKind } from '@/types/Token';
-import { produceJoinedSyntaxTokens } from '@/tokenizer/produceJoinedSyntaxTokens';
-import { accumulateTextTokens } from '@/tokenizer/accumulateTextTokens';
-import { tokenizeString } from '@/tokenizer/tokenizeString';
+import { SegmentType } from '!types/SegmentStream';
+import { TokenKind } from '!types/Token';
+import { produceJoinedSyntaxTokens } from '!tokenizer/produceJoinedSyntaxTokens';
+import { accumulateTextTokens } from '!tokenizer/accumulateTextTokens';
+import { tokenizeString } from '!tokenizer/tokenizeString';
 
 export function* tokenizer<T>(segments: SegmentStream<T>): Generator<Token<T>> {
   for (const segment of segments) {

@@ -1,15 +1,15 @@
 import type {
   AstAttribute,
   AstAttributeComposite,
-} from '@/types/AbstractSyntaxTree';
-import type { ConsumeStream } from '@/types/ConsumeStream';
-import type { Token } from '@/types/Token';
+} from '!types/AbstractSyntaxTree';
+import type { ConsumeStream } from '!types/ConsumeStream';
+import type { Token } from '!types/Token';
 
-import { TokenKind } from '@/types/Token';
-import { AstKind, AttributeType } from '@/types/AbstractSyntaxTree';
-import { assert } from '@/parser/util/assert';
-import { assertSyntax } from '@/parser/util/assertSyntax';
-import { nextToken } from '@/parser/util/nextToken';
+import { TokenKind } from '!types/Token';
+import { AstKind, AttributeType } from '!types/AbstractSyntaxTree';
+import { assert } from '!parser/util/assert';
+import { assertSyntax } from '!parser/util/assertSyntax';
+import { nextToken } from '!parser/util/nextToken';
 
 export const parseAttributeValue = <T>(
   key: string,

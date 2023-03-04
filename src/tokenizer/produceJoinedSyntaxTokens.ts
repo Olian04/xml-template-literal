@@ -1,5 +1,5 @@
-import type { StaticToken } from '@/types/Token';
-import { TokenKind } from '@/types/Token';
+import type { StaticToken } from '!types/Token';
+import { TokenKind } from '!types/Token';
 
 export function* produceJoinedSyntaxTokens(
   tokens: Generator<StaticToken>

@@ -1,13 +1,13 @@
-import type { AstAttribute, AstChild } from '@/types/AbstractSyntaxTree';
-import type { ConsumeStream } from '@/types/ConsumeStream';
-import type { Token } from '@/types/Token';
-import { TokenKind } from '@/types/Token';
-import { AstKind, ChildType } from '@/types/AbstractSyntaxTree';
+import type { AstAttribute, AstChild } from '!types/AbstractSyntaxTree';
+import type { ConsumeStream } from '!types/ConsumeStream';
+import type { Token } from '!types/Token';
+import { TokenKind } from '!types/Token';
+import { AstKind, ChildType } from '!types/AbstractSyntaxTree';
 
-import { assert } from '@/parser/util/assert';
-import { assertSyntax } from '@/parser/util/assertSyntax';
-import { nextToken } from '@/parser/util/nextToken';
-import { parseAttribute } from '@/parser//parseAttribute';
+import { assert } from '!parser/util/assert';
+import { assertSyntax } from '!parser/util/assertSyntax';
+import { nextToken } from '!parser/util/nextToken';
+import { parseAttribute } from '!parser//parseAttribute';
 
 export const parseChildNode = <T>(
   tok: ConsumeStream<Token<T>>

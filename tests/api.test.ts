@@ -1,9 +1,9 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
-import { xml, parseXml } from '../../src/api';
+import { xml, parseXml } from '../src/api';
 
-describe('api', () => {
+describe('[test] api', () => {
   it('should expose XML template literal function', () => {
     expect(typeof xml).to.equal('function');
 

@@ -1,6 +1,6 @@
-import type { Token } from '@/types/Token';
-import { UnexpectedEOF } from '@/errors/UnexpectedEOF';
-import { ConsumeStream } from '@/types/ConsumeStream';
+import type { Token } from '!types/Token';
+import { UnexpectedEOF } from '!errors/UnexpectedEOF';
+import { ConsumeStream } from '!types/ConsumeStream';
 
 export const createConsumeStream = <V, T extends Token<V>>(
   gen: Generator<T>

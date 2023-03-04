@@ -1,5 +1,5 @@
-import { UnexpectedToken } from '../../errors/UnexpectedToken';
-import { Token } from '@/types/Token';
+import { UnexpectedToken } from '!errors/UnexpectedToken';
+import { Token } from '!types/Token';
 
 export const assert = (
   key: 'value' | 'kind',

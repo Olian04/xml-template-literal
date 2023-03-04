@@ -1,11 +1,11 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
-import type { Token } from '../../src/types/Token';
-import { tokenizer } from '../../src/tokenizer';
-import { mergeTemplateSegments } from '../../src/util/mergeTemplateSegments';
+import type { Token } from '../src/types/Token';
+import { tokenizer } from '../src/tokenizer';
+import { mergeTemplateSegments } from '../src/util/mergeTemplateSegments';
 
-describe('tokenizer', () => {
+describe('[test] tokenizer', () => {
   it('should correctly tokenize naked tag', () => {
     const tok = tokenizer(
       mergeTemplateSegments({
