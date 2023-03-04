@@ -1,11 +1,16 @@
-import type { AstAttribute, AstChild } from './types/AbstractSyntaxTree';
+import type {
+  AstAttribute,
+  AstAttributeComposite,
+  AstChild,
+} from './types/AbstractSyntaxTree';
 import type { ConsumeStream } from './types/ConsumeStream';
-import type { SyntaxToken, Token } from './types/Token';
+import type { Token } from './types/Token';
 
 import { TokenKind } from './types/Token';
-import { AttributeType, ChildType } from './types/AbstractSyntaxTree';
+import { AstKind, AttributeType, ChildType } from './types/AbstractSyntaxTree';
 import { assert } from './util/assert';
 import { createConsumeStream } from './util/createConsumeStream';
+import { assertSyntax } from './util/assertSyntax';
 
 const nextToken = (
   tok: ConsumeStream<Token<unknown>>,

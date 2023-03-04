@@ -1,5 +1,8 @@
-import { SegmentStream } from './types/SegmentStream';
-import { Token, TokenKind, StaticToken } from './types/Token';
+import type { SegmentStream } from './types/SegmentStream';
+import type { Token, StaticToken } from './types/Token';
+
+import { SegmentType } from './types/SegmentStream';
+import { TokenKind } from './types/Token';
 
 function* tokenizeString(input: string): Generator<StaticToken> {
   for (const char of input) {
