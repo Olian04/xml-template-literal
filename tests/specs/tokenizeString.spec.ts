@@ -1,8 +1,8 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
-import type { Token } from '../../src/types/Token';
-import { tokenizeString } from '../../src/tokenizer/tokenizeString';
+import type { Token } from '!types/Token';
+import { tokenizeString } from '!tokenizer/tokenizeString';
 
 describe('[spec] tokenizeString', () => {
   it('should correctly tokenize naked tag', () => {

@@ -12,9 +12,9 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "strict": true,
-    "baseUrl": "./src/",
+    "baseUrl": "./",
     "paths": {
-      "!*": ["*"]
+      "!*": ["src/*"]
     }
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"]

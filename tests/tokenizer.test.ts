@@ -1,9 +1,9 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
-import type { Token } from '../src/types/Token';
-import { tokenizer } from '../src/tokenizer';
-import { mergeTemplateSegments } from '../src/util/mergeTemplateSegments';
+import type { Token } from '!types/Token';
+import { tokenizer } from '!tokenizer';
+import { mergeTemplateSegments } from '!util/mergeTemplateSegments';
 
 describe('[test] tokenizer', () => {
   it('should correctly tokenize naked tag', () => {

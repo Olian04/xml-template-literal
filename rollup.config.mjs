@@ -33,7 +33,7 @@ const es5 = [
     input: './src/api.ts',
     output: {
       file: './cdn/xml-template-literal.js',
-      format: 'iife',
+      format: 'umd',
       name: 'xmlTemplateLiteral',
     },
     plugins: [
