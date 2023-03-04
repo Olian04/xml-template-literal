@@ -10,7 +10,7 @@ describe('api', () => {
     const A = { foo: 0 };
     const B = [1, 2, 3];
     const C = 42;
-    const out = xml<typeof A | typeof B | typeof C>`
+    const ast = xml<typeof A | typeof B | typeof C>`
       <someTag
         property="value"
         prop=${A}
@@ -23,6 +23,26 @@ describe('api', () => {
       <greet name="Foo ${C} Bar"></greet>
     `;
 
-    expect(typeof out).to.equal('object');
+    expect(typeof ast).to.equal('object');
+  });
+
+  it('should work for an "Hello, world!" example ', () => {
+    const ast = xml`
+      <div>Hello, world!</div>
+    `;
+
+    expect(ast).to.deep.equal({
+      kind: 'Child',
+      tag: 'div',
+      type: 'Node',
+      attributes: [],
+      children: [
+        {
+          kind: 'Child',
+          type: 'Text',
+          value: 'Hello, world!',
+        },
+      ],
+    });
   });
 });

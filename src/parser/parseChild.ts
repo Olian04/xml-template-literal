@@ -9,7 +9,7 @@ import { assertSyntax } from '!parser/util/assertSyntax';
 import { nextToken } from '!parser/util/nextToken';
 import { parseAttribute } from '!parser//parseAttribute';
 
-export const parseChildNode = <T>(
+export const parseNodeChild = <T>(
   tok: ConsumeStream<Token<T>>
 ): AstChild<T> => {
   assertSyntax('<', tok.current);
@@ -37,6 +37,9 @@ export const parseChildNode = <T>(
   const children: AstChild<T>[] = [];
   while (tok.current.value !== '</') {
     children.push(parseChild(tok));
+    if (tok.current.value === '</') {
+      break;
+    }
     nextToken(tok);
   }
   assertSyntax('</', tok.current);
@@ -53,6 +56,25 @@ export const parseChildNode = <T>(
   };
 };
 
+export const parseTextChild = <T>(
+  tok: ConsumeStream<Token<T>>
+): AstChild<T> => {
+  let value = '';
+  while (
+    tok.current.kind === TokenKind.Text ||
+    tok.current.kind === TokenKind.Whitespace
+  ) {
+    value += tok.current.value;
+    nextToken(tok, false);
+  }
+
+  return {
+    kind: AstKind.Child,
+    type: ChildType.Text,
+    value,
+  };
+};
+
 export const parseChild = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
   if (tok.current.kind === TokenKind.Data) {
     return {
@@ -62,11 +84,7 @@ export const parseChild = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
     };
   }
   if (tok.current.kind === TokenKind.Text) {
-    return {
-      kind: AstKind.Child,
-      type: ChildType.Text,
-      value: tok.current.value,
-    };
+    return parseTextChild(tok);
   }
-  return parseChildNode(tok);
+  return parseNodeChild(tok);
 };
