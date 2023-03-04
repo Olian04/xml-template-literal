@@ -49,3 +49,7 @@ import { xml } from 'xml-template-literal';
   const { xml } = xmlTemplateLiteral;
 </script>
 ```
+
+## Demos
+
+- Parse and render HTML: <https://jsfiddle.net/tqa24c1h/12>
