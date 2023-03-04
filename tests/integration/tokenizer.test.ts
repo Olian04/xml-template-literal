@@ -1,9 +1,9 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
-import type { Token } from '../src/types/Token';
-import { tokenizer } from '../src/tokenizer';
-import { mergeTemplateSegments } from '../src/util/mergeTemplateSegments';
+import type { Token } from '../../src/types/Token';
+import { tokenizer } from '../../src/tokenizer';
+import { mergeTemplateSegments } from '../../src/util/mergeTemplateSegments';
 
 describe('tokenizer', () => {
   it('should correctly tokenize naked tag', () => {
@@ -38,6 +38,23 @@ describe('tokenizer', () => {
       'div',
       ' ',
       '/>',
+    ]);
+  });
+
+  it('should correctly not produce joined syntax tokens when there is a whitespace between the syntax tokens', () => {
+    const tok = tokenizer(
+      mergeTemplateSegments({
+        dynamic: [],
+        static: ['<div/ >'],
+      })
+    );
+
+    expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
+      '<',
+      'div',
+      '/',
+      ' ',
+      '>',
     ]);
   });
 

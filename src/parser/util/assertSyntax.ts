@@ -1,5 +1,5 @@
-import { UnexpectedToken } from '../errors/UnexpectedToken';
-import { SyntaxToken, Token, TokenKind } from '../types/Token';
+import { UnexpectedToken } from '@/errors/UnexpectedToken';
+import { SyntaxToken, Token, TokenKind } from '@/types/Token';
 
 export const assertSyntax = (
   expected: SyntaxToken['value'],

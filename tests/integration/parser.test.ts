@@ -1,16 +1,16 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
-import { mergeTemplateSegments } from '../src/util/mergeTemplateSegments';
-import { tokenizer } from '../src/tokenizer';
-import { parseTokens } from '../src/parser';
+import { mergeTemplateSegments } from '../../src/util/mergeTemplateSegments';
+import { tokenizer } from '../../src/tokenizer';
+import { parseTokens } from '../../src/parser';
 import {
   AttributeType,
   ChildType,
   AstKind,
-} from '../src/types/AbstractSyntaxTree';
-import { UnexpectedEOF } from '../src/errors/UnexpectedEOF';
-import { UnexpectedToken } from '../src/errors/UnexpectedToken';
+} from '../../src/types/AbstractSyntaxTree';
+import { UnexpectedEOF } from '../../src/errors/UnexpectedEOF';
+import { UnexpectedToken } from '../../src/errors/UnexpectedToken';
 
 describe('parser', () => {
   it('should throw when provided an empty input', () => {

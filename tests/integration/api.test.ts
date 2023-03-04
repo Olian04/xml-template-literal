@@ -1,7 +1,7 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
-import { xml, parseXml } from '../src/api';
+import { xml, parseXml } from '../../src/api';
 
 describe('api', () => {
   it('should expose XML template literal function', () => {
