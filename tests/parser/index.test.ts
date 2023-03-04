@@ -11,7 +11,7 @@ import { UnexpectedToken } from '!errors/UnexpectedToken';
 describe('parser', () => {
   it('should throw when provided an empty input', () => {
     expect(() => {
-      const ast = parseTokens(
+      parseTokens(
         tokenizer(
           mergeTemplateSegments({
             dynamic: [],
@@ -24,7 +24,7 @@ describe('parser', () => {
 
   it('should throw when provided invalid syntax in input', () => {
     expect(() => {
-      const ast = parseTokens(
+      parseTokens(
         tokenizer(
           mergeTemplateSegments({
             dynamic: [],
@@ -35,7 +35,7 @@ describe('parser', () => {
     }).to.throw(UnexpectedEOF);
 
     expect(() => {
-      const ast = parseTokens(
+      parseTokens(
         tokenizer(
           mergeTemplateSegments({
             dynamic: [],
@@ -46,7 +46,7 @@ describe('parser', () => {
     }).to.throw(UnexpectedToken);
 
     expect(() => {
-      const ast = parseTokens(
+      parseTokens(
         tokenizer(
           mergeTemplateSegments({
             dynamic: [],
@@ -57,7 +57,7 @@ describe('parser', () => {
     }).to.throw(UnexpectedEOF);
 
     expect(() => {
-      const ast = parseTokens(
+      parseTokens(
         tokenizer(
           mergeTemplateSegments({
             dynamic: [],

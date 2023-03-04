@@ -5,8 +5,17 @@ const isStaticSegment = (v: number) => v % 2 === 0;
 export const mergeTemplateSegments = <T>(templateSegments: {
   static: string[];
   dynamic: T[];
-}): SegmentStream<T> =>
-  new Array(templateSegments.static.length + templateSegments.dynamic.length)
+}): SegmentStream<T> => {
+  const staticLength = templateSegments.static.length;
+  const dynamicLength = templateSegments.dynamic.length;
+  if (staticLength - dynamicLength !== 1) {
+    throw new RangeError(
+      `Invalid segment lengths: Expected "static.length - dynamic.length" to equal 1 but got ${
+        staticLength - dynamicLength
+      }`
+    );
+  }
+  return new Array(staticLength + dynamicLength)
     .fill(0)
     .map((_, i) => {
       if (isStaticSegment(i)) {
@@ -21,3 +30,4 @@ export const mergeTemplateSegments = <T>(templateSegments: {
       } as const;
     })
     .filter((seg) => Boolean(seg.value));
+};
