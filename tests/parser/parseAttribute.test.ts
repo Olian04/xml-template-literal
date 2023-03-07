@@ -7,18 +7,18 @@ import { parseAttribute } from '!parser/parseAttribute';
 import { createConsumeStream } from '!parser/util/createConsumeStream';
 import { AstKind, AttributeType } from '!types/AbstractSyntaxTree';
 
+export const t = <T>(
+  staticSegments: TemplateStringsArray,
+  ...dynamicSegments: T[]
+) =>
+  mergeTemplateSegments({
+    dynamic: dynamicSegments,
+    static: [...staticSegments],
+  });
+
 describe('parseAttribute', () => {
   it('should correctly parse text attribute', () => {
-    const ast = parseAttribute(
-      createConsumeStream(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [],
-            static: ['id="foo"'],
-          })
-        )
-      )
-    );
+    const ast = parseAttribute(createConsumeStream(tokenizer(t`id="foo"`)));
 
     expect(ast).to.deep.equal({
       kind: AstKind.Attribute,
@@ -30,16 +30,7 @@ describe('parseAttribute', () => {
 
   it('should correctly parse data attribute', () => {
     const A = { foo: 0 };
-    const ast = parseAttribute(
-      createConsumeStream(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [A],
-            static: ['id=', ''],
-          })
-        )
-      )
-    );
+    const ast = parseAttribute(createConsumeStream(tokenizer(t`id=${A}`)));
 
     expect(ast).to.deep.equal({
       kind: AstKind.Attribute,
@@ -52,14 +43,7 @@ describe('parseAttribute', () => {
   it('should correctly parse composite attribute', () => {
     const A = { foo: 0 };
     const ast = parseAttribute(
-      createConsumeStream(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [A],
-            static: ['id="pre', 'post"'],
-          })
-        )
-      )
+      createConsumeStream(tokenizer(t`id="pre${A}post"`))
     );
 
     expect(ast).to.deep.equal({

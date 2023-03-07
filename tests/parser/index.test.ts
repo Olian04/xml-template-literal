@@ -8,75 +8,44 @@ import { AttributeType, ChildType, AstKind } from '!types/AbstractSyntaxTree';
 import { UnexpectedEOF } from '!errors/UnexpectedEOF';
 import { UnexpectedToken } from '!errors/UnexpectedToken';
 
+export const t = <T>(
+  staticSegments: TemplateStringsArray,
+  ...dynamicSegments: T[]
+) =>
+  mergeTemplateSegments({
+    dynamic: dynamicSegments,
+    static: [...staticSegments],
+  });
+
 describe('parser', () => {
   it('should throw when provided an empty input', () => {
     expect(() => {
-      parseTokens(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [],
-            static: [''],
-          })
-        )
-      );
+      parseTokens(tokenizer(t``));
     }).to.throw(UnexpectedEOF);
   });
 
   it('should throw when provided invalid syntax in input', () => {
     expect(() => {
-      parseTokens(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [],
-            static: ['<div'],
-          })
-        )
-      );
+      parseTokens(tokenizer(t`<div`));
     }).to.throw(UnexpectedEOF);
 
     expect(() => {
-      parseTokens(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [],
-            static: ['<div<'],
-          })
-        )
-      );
+      parseTokens(tokenizer(t`<div<`));
     }).to.throw(UnexpectedToken);
 
     expect(() => {
-      parseTokens(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [],
-            static: ['<div>'],
-          })
-        )
-      );
+      parseTokens(tokenizer(t`<div>`));
     }).to.throw(UnexpectedEOF);
 
     expect(() => {
-      parseTokens(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [],
-            static: ['<div'],
-          })
-        )
-      );
+      parseTokens(tokenizer(t`<div`));
     }).to.throw(UnexpectedEOF);
   });
 
   it('should join together dynamic and static parts in one AST', () => {
     const A = { foo: 0 };
     const ast = parseTokens(
-      tokenizer(
-        mergeTemplateSegments({
-          dynamic: [A],
-          static: ['<someTag property="value" prop=', '></someTag>'],
-        })
-      )
+      tokenizer(t`<someTag property="value" prop=${A}></someTag>`)
     );
     expect(ast).to.deep.equal({
       kind: AstKind.Child,
@@ -101,14 +70,7 @@ describe('parser', () => {
   });
 
   it('should correctly parse tag with children', () => {
-    const ast = parseTokens(
-      tokenizer(
-        mergeTemplateSegments({
-          dynamic: [],
-          static: ['<div><p> </p></div>'],
-        })
-      )
-    );
+    const ast = parseTokens(tokenizer(t`<div><p> </p></div>`));
 
     expect(ast).to.deep.equal({
       kind: AstKind.Child,
@@ -136,14 +98,7 @@ describe('parser', () => {
   it('should correctly parse composite property value', () => {
     const A = { foo: 0 };
 
-    const ast = parseTokens(
-      tokenizer(
-        mergeTemplateSegments({
-          dynamic: [A],
-          static: ['<div class="box ', ' lg" />'],
-        })
-      )
-    );
+    const ast = parseTokens(tokenizer(t`<div class="box ${A} lg" />`));
 
     expect(ast).to.deep.equal({
       kind: AstKind.Child,

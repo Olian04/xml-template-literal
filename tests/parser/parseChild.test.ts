@@ -7,43 +7,27 @@ import { parseChild } from '!parser/parseChild';
 import { createConsumeStream } from '!parser/util/createConsumeStream';
 import { AstKind, ChildType } from '!types/AbstractSyntaxTree';
 
+export const t = <T>(
+  staticSegments: TemplateStringsArray,
+  ...dynamicSegments: T[]
+) =>
+  mergeTemplateSegments({
+    dynamic: dynamicSegments,
+    static: [...staticSegments],
+  });
+
 describe('parseChild', () => {
   it('should produce the same AST when parsing a regular tag and an equivalent self-closing tag', () => {
-    const regular = parseChild(
-      createConsumeStream(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [],
-            static: ['<div></div>'],
-          })
-        )
-      )
-    );
+    const regular = parseChild(createConsumeStream(tokenizer(t`<div></div>`)));
 
-    const selfClose = parseChild(
-      createConsumeStream(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [],
-            static: ['<div/>'],
-          })
-        )
-      )
-    );
+    const selfClose = parseChild(createConsumeStream(tokenizer(t`<div/>`)));
 
     expect(regular).to.deep.equal(selfClose);
   });
 
   it('should correctly parse text child', () => {
     const regular = parseChild(
-      createConsumeStream(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [],
-            static: ['<div> foo </div>'],
-          })
-        )
-      )
+      createConsumeStream(tokenizer(t`<div> foo </div>`))
     );
 
     expect(regular).to.deep.equal({
@@ -64,14 +48,7 @@ describe('parseChild', () => {
   it('should correctly parse data child', () => {
     const A = { foo: 0 };
     const regular = parseChild(
-      createConsumeStream(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [A],
-            static: ['<div>', '</div>'],
-          })
-        )
-      )
+      createConsumeStream(tokenizer(t`<div>${A}</div>`))
     );
 
     expect(regular).to.deep.equal({
@@ -92,14 +69,7 @@ describe('parseChild', () => {
   it('should correctly parse node child', () => {
     const A = { foo: 0 };
     const regular = parseChild(
-      createConsumeStream(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [],
-            static: ['<div><h1></h1></div>'],
-          })
-        )
-      )
+      createConsumeStream(tokenizer(t`<div><h1></h1></div>`))
     );
 
     expect(regular).to.deep.equal({
