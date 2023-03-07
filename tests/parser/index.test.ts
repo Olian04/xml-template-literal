@@ -121,7 +121,13 @@ describe('parser', () => {
           type: ChildType.Node,
           tag: 'p',
           attributes: [],
-          children: [],
+          children: [
+            {
+              kind: AstKind.Child,
+              type: ChildType.Text,
+              value: ' ',
+            },
+          ],
         },
       ],
     });

@@ -33,14 +33,14 @@ export const parseNodeChild = <T>(
     };
   }
   assertSyntax('>', tok.current);
-  nextToken(tok);
+  nextToken(tok, false);
   const children: AstChild<T>[] = [];
   while (tok.current.value !== '</') {
     children.push(parseChild(tok));
     if (tok.current.value === '</') {
       break;
     }
-    nextToken(tok);
+    nextToken(tok, false);
   }
   assertSyntax('</', tok.current);
   nextToken(tok);
@@ -83,7 +83,10 @@ export const parseChild = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
       value: tok.current.value,
     };
   }
-  if (tok.current.kind === TokenKind.Text) {
+  if (
+    tok.current.kind === TokenKind.Text ||
+    tok.current.kind === TokenKind.Whitespace
+  ) {
     return parseTextChild(tok);
   }
   return parseNodeChild(tok);

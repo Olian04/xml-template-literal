@@ -58,7 +58,7 @@ describe('tokenizer', () => {
     ]);
   });
 
-  it('should correctly tokenize tag with attribute', () => {
+  it('should correctly tokenize tag with string attribute', () => {
     const tok = tokenizer(
       mergeTemplateSegments({
         dynamic: [],
@@ -74,6 +74,55 @@ describe('tokenizer', () => {
       '=',
       '"',
       'foo',
+      '"',
+      '>',
+      '</',
+      'div',
+      '>',
+    ]);
+  });
+
+  it('should correctly tokenize tag with data attribute', () => {
+    const A = { foo: 0 };
+    const tok = tokenizer(
+      mergeTemplateSegments({
+        dynamic: [A],
+        static: ['<div id=', '></div>'],
+      })
+    );
+
+    expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
+      '<',
+      'div',
+      ' ',
+      'id',
+      '=',
+      A,
+      '>',
+      '</',
+      'div',
+      '>',
+    ]);
+  });
+
+  it('should correctly tokenize tag with composite attribute', () => {
+    const A = { foo: 0 };
+    const tok = tokenizer(
+      mergeTemplateSegments({
+        dynamic: [A],
+        static: ['<div id="foo', '"></div>'],
+      })
+    );
+
+    expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
+      '<',
+      'div',
+      ' ',
+      'id',
+      '=',
+      '"',
+      'foo',
+      A,
       '"',
       '>',
       '</',
@@ -112,12 +161,12 @@ describe('tokenizer', () => {
     const B = [1, 2, 3];
     const tok = tokenizer(
       mergeTemplateSegments({
+        dynamic: [A, B],
         static: [
           '\n    <someTag\n    property="value"\n    prop=',
           '\n    >\n    <div id="bar">foo</div>\n    ',
           '\n  </someTag>\n  <greet name="World" />\n   <greet name="World"></greet> ',
         ],
-        dynamic: [A, B],
       })
     );
 
