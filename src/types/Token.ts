@@ -3,6 +3,7 @@ export const enum TokenKind {
   Data = 'Data',
   Text = 'Text',
   Whitespace = 'Whitespace',
+  EndOfFile = 'EndOfFile',
 }
 
 export type SyntaxToken = {
@@ -25,5 +26,10 @@ export type DataToken<T> = {
   value: T;
 };
 
-export type Token<T> = DataToken<T> | SyntaxToken | TextToken | WhitespaceToken;
+export type EndOfFileToken = {
+  kind: TokenKind.EndOfFile;
+  value: null;
+};
+
+export type Token<T> = DataToken<T> | SyntaxToken | TextToken | WhitespaceToken | EndOfFileToken;
 export type StaticToken = Exclude<Token<unknown>, DataToken<unknown>>;

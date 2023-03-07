@@ -1,4 +1,5 @@
 export const enum AstKind {
+  Root = 'Root',
   Child = 'Child',
   Attribute = 'Attribute',
   Composite = 'Composite',
@@ -66,3 +67,8 @@ export type AstAttributeComposite<T> =
       type: AttributeType.Data;
       value: T;
     };
+
+export type AstRoot<T> = {
+  kind: AstKind.Root;
+  children: AstChild<T>[];
+}

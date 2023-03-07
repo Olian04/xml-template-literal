@@ -38,7 +38,7 @@ export const parseAttributeValue = <T>(
     }
     nextToken(tok, false);
   }
-  assertSyntax('"', tok.current);
+  assertSyntax('"', tok);
 
   if (parts.length > 0) {
     parts.push({
@@ -64,10 +64,10 @@ export const parseAttributeValue = <T>(
 export const parseAttribute = <T>(
   tok: ConsumeStream<Token<T>>
 ): AstAttribute<T> => {
-  assert('kind', TokenKind.Text, tok.current);
+  assert('kind', TokenKind.Text, tok);
   const key = tok.current.value as string;
   nextToken(tok);
-  assertSyntax('=', tok.current);
+  assertSyntax('=', tok);
   nextToken(tok);
   if (tok.current.kind === TokenKind.Data) {
     return {
@@ -77,7 +77,7 @@ export const parseAttribute = <T>(
       value: tok.current.value,
     };
   }
-  assertSyntax('"', tok.current);
+  assertSyntax('"', tok);
   nextToken(tok);
   return parseAttributeValue(key, tok);
 };

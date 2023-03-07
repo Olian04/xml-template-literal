@@ -1,11 +1,16 @@
+import { UnexpectedEOF } from '!errors/UnexpectedEOF';
 import { UnexpectedToken } from '!errors/UnexpectedToken';
-import { Token } from '!types/Token';
+import { ConsumeStream } from '!types/ConsumeStream';
+import { Token, TokenKind } from '!types/Token';
 
 export const assert = (
   key: 'value' | 'kind',
   expected: any,
-  token: Token<unknown>
+  tok: ConsumeStream<Token<unknown>>,
 ) => {
-  if (token[key] !== expected)
-    throw new UnexpectedToken(expected, String(token[key]));
+  if (tok.current.kind === TokenKind.EndOfFile) {
+    throw new UnexpectedEOF(tok?.previous?.kind);
+  }
+  if (tok.current[key] !== expected)
+    throw new UnexpectedToken(expected, String(tok.current[key]));
 };
