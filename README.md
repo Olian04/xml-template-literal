@@ -53,7 +53,7 @@ import { xml } from 'xml-template-literal';
 
 ## Demos
 
-- Parse and render HTML: <https://jsfiddle.net/tqa24c1h/12>
+- Parse and render HTML: <https://jsfiddle.net/2q7fpa6g/3/>
 
 ## AST Format & Types
 
