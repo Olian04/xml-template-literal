@@ -1,16 +1,18 @@
-export const enum AstKind {
+// Enums in this file should not be marked as "const" since these enums are part of the API
+export enum AstKind {
+  Root = 'Root',
   Child = 'Child',
   Attribute = 'Attribute',
   Composite = 'Composite',
 }
 
-export const enum ChildType {
+export enum ChildType {
   Node = 'Node',
   Text = 'Text',
   Data = 'Data',
 }
 
-export const enum AttributeType {
+export enum AttributeType {
   Text = 'Text',
   Data = 'Data',
   Composite = 'Composite',
@@ -66,3 +68,8 @@ export type AstAttributeComposite<T> =
       type: AttributeType.Data;
       value: T;
     };
+
+export type AstRoot<T> = {
+  kind: AstKind.Root;
+  children: AstChild<T>[];
+}

@@ -1,11 +1,16 @@
+import { UnexpectedEOF } from '!errors/UnexpectedEOF';
 import { UnexpectedToken } from '!errors/UnexpectedToken';
+import { ConsumeStream } from '!types/ConsumeStream';
 import { SyntaxToken, Token, TokenKind } from '!types/Token';
 
 export const assertSyntax = (
   expected: SyntaxToken['value'],
-  token: Token<unknown>
+  tok: ConsumeStream<Token<unknown>>,
 ) => {
-  if (token.kind !== TokenKind.Syntax || token.value !== expected) {
-    throw new UnexpectedToken(expected, String(token.value));
+  if (tok.current.kind === TokenKind.EndOfFile) {
+    throw new UnexpectedEOF(tok?.previous?.kind);
+  }
+  if (tok.current.kind !== TokenKind.Syntax || tok.current.value !== expected) {
+    throw new UnexpectedToken(expected, String(tok.current.value));
   }
 };

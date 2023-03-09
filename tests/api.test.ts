@@ -1,7 +1,7 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
-import { xml, parseXml } from '!api';
+import { xml, AstKind, ChildType } from '!api';
 
 describe('api', () => {
   it('should expose XML template literal function', () => {
@@ -27,21 +27,58 @@ describe('api', () => {
   });
 
   it('should work for an "Hello, world!" example ', () => {
-    const ast = xml`
-      <div>Hello, world!</div>
-    `;
+    const ast = xml`<div>Hello, world!</div>`;
 
     expect(ast).to.deep.equal({
-      kind: 'Child',
-      tag: 'div',
-      type: 'Node',
-      attributes: [],
+      kind: AstKind.Root,
       children: [
         {
-          kind: 'Child',
-          type: 'Text',
-          value: 'Hello, world!',
-        },
+          kind: AstKind.Child,
+          type: ChildType.Node,
+          tag: 'div',
+          attributes: [],
+          children: [
+            {
+              kind: AstKind.Child,
+              type: ChildType.Text,
+              value: 'Hello, world!',
+            },
+          ],
+        }
+      ],
+    });
+  });
+
+  it('should work for an "Hello, ${name}!" example ', () => {
+    const name = 'Oliver';
+    const ast = xml`<div>Hello, ${name}!</div>`;
+
+    expect(ast).to.deep.equal({
+      kind: AstKind.Root,
+      children: [
+        {
+          kind: AstKind.Child,
+          type: ChildType.Node,
+          tag: 'div',
+          attributes: [],
+          children: [
+            {
+              kind: AstKind.Child,
+              type: ChildType.Text,
+              value: 'Hello, ',
+            },
+            {
+              kind: AstKind.Child,
+              type: ChildType.Data,
+              value: name,
+            },
+            {
+              kind: AstKind.Child,
+              type: ChildType.Text,
+              value: '!',
+            },
+          ],
+        }
       ],
     });
   });

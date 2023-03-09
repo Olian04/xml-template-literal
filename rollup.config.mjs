@@ -1,49 +1,80 @@
-import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
+import typescript from '@rollup/plugin-typescript';
+import ttypescript from 'ttypescript';
 
 /** @type {import('rollup').RollupOptions[]} */
-const es6 = [
+export default [
   {
     input: './src/api.ts',
     output: {
-      file: './cdn/xml-template-literal.mjs',
-      format: 'es',
-    },
-    plugins: [
-      typescript({
-        target: 'es6',
-        module: 'esnext',
-        compilerOptions: {
-          declaration: false,
-          sourceMap: false,
-        },
-      }),
-      resolve(),
-      commonjs(),
-      terser(),
-    ],
-  },
-];
-
-/** @type {import('rollup').RollupOptions[]} */
-const es5 = [
-  {
-    input: './src/api.ts',
-    output: {
-      file: './cdn/xml-template-literal.js',
+      file: './dist/api.umd.js',
       format: 'umd',
       name: 'xmlTemplateLiteral',
+      sourcemap: true,
     },
     plugins: [
       typescript({
         target: 'es5',
-        module: 'esnext',
+        module: 'es6',
         compilerOptions: {
           declaration: false,
-          sourceMap: false,
+          sourceMap: true,
         },
+        exclude: ['tests/**/*.ts'],
+      }),
+      resolve(),
+      commonjs(),
+      terser(),
+    ],
+  },
+  {
+    input: './src/api.ts',
+    output: {
+      file: './dist/api.es.js',
+      format: 'es',
+      sourcemap: true,
+    },
+    plugins: [
+      typescript({
+        target: 'es6',
+        module: 'es6',
+        compilerOptions: {
+          declaration: false,
+          sourceMap: true,
+        },
+        exclude: ['tests/**/*.ts'],
+      }),
+      resolve(),
+      commonjs(),
+      terser(),
+    ],
+  },
+  {
+    input: './src/api.ts',
+    output: {
+      file: './dist/api.js',
+      format: 'commonjs',
+      sourcemap: true,
+    },
+    plugins: [
+      typescript({
+        typescript: ttypescript,
+        target: 'es6',
+        module: 'es6',
+        compilerOptions: {
+          target: 'es6',
+          module: 'es6',
+          plugins: [
+            { transform: 'typescript-transform-paths' },
+            {
+              transform: 'typescript-transform-paths',
+              afterDeclarations: true,
+            },
+          ],
+        },
+        exclude: ['tests/**/*.test.ts'],
       }),
       resolve(),
       commonjs(),
@@ -51,6 +82,3 @@ const es5 = [
     ],
   },
 ];
-
-/** @type {import('rollup').RollupOptions[]} */
-export default [...es5, ...es6];

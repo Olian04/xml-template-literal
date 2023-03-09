@@ -3,8 +3,10 @@
 .mocharc.js
 rollup.config.mjs
 tsconfig.json
+tsconfig.prod.json
 .vscode
 .circleci
+.trunk
 demos/
 node_modules/
 src/

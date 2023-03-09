@@ -8,120 +8,99 @@ import { AttributeType, ChildType, AstKind } from '!types/AbstractSyntaxTree';
 import { UnexpectedEOF } from '!errors/UnexpectedEOF';
 import { UnexpectedToken } from '!errors/UnexpectedToken';
 
+export const t = <T>(
+  staticSegments: TemplateStringsArray,
+  ...dynamicSegments: T[]
+) =>
+  mergeTemplateSegments({
+    dynamic: dynamicSegments,
+    static: [...staticSegments],
+  });
+
 describe('parser', () => {
-  it('should throw when provided an empty input', () => {
-    expect(() => {
-      parseTokens(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [],
-            static: [''],
-          })
-        )
-      );
-    }).to.throw(UnexpectedEOF);
+  it('should return empty root when provided an empty input', () => {
+    expect(parseTokens(tokenizer(t``))).to.deep.equal({
+      kind: AstKind.Root,
+      children: [],
+    });
   });
 
   it('should throw when provided invalid syntax in input', () => {
     expect(() => {
-      parseTokens(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [],
-            static: ['<div'],
-          })
-        )
-      );
+      parseTokens(tokenizer(t`<div`));
     }).to.throw(UnexpectedEOF);
 
     expect(() => {
-      parseTokens(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [],
-            static: ['<div<'],
-          })
-        )
-      );
+      parseTokens(tokenizer(t`<div<`));
     }).to.throw(UnexpectedToken);
 
     expect(() => {
-      parseTokens(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [],
-            static: ['<div>'],
-          })
-        )
-      );
+      parseTokens(tokenizer(t`<div>`));
     }).to.throw(UnexpectedEOF);
 
     expect(() => {
-      parseTokens(
-        tokenizer(
-          mergeTemplateSegments({
-            dynamic: [],
-            static: ['<div'],
-          })
-        )
-      );
+      parseTokens(tokenizer(t`<div`));
     }).to.throw(UnexpectedEOF);
   });
 
   it('should join together dynamic and static parts in one AST', () => {
     const A = { foo: 0 };
     const ast = parseTokens(
-      tokenizer(
-        mergeTemplateSegments({
-          dynamic: [A],
-          static: ['<someTag property="value" prop=', '></someTag>'],
-        })
-      )
+      tokenizer(t`<someTag property="value" prop=${A}></someTag>`)
     );
     expect(ast).to.deep.equal({
-      kind: AstKind.Child,
-      type: ChildType.Node,
-      tag: 'someTag',
-      attributes: [
-        {
-          kind: AstKind.Attribute,
-          type: AttributeType.Text,
-          key: 'property',
-          value: 'value',
-        },
-        {
-          kind: AstKind.Attribute,
-          type: AttributeType.Data,
-          key: 'prop',
-          value: A,
-        },
-      ],
-      children: [],
-    });
-  });
-
-  it('should correctly parse tag with children', () => {
-    const ast = parseTokens(
-      tokenizer(
-        mergeTemplateSegments({
-          dynamic: [],
-          static: ['<div><p> </p></div>'],
-        })
-      )
-    );
-
-    expect(ast).to.deep.equal({
-      kind: AstKind.Child,
-      type: ChildType.Node,
-      tag: 'div',
-      attributes: [],
+      kind: AstKind.Root,
       children: [
         {
           kind: AstKind.Child,
           type: ChildType.Node,
-          tag: 'p',
-          attributes: [],
+          tag: 'someTag',
+          attributes: [
+            {
+              kind: AstKind.Attribute,
+              type: AttributeType.Text,
+              key: 'property',
+              value: 'value',
+            },
+            {
+              kind: AstKind.Attribute,
+              type: AttributeType.Data,
+              key: 'prop',
+              value: A,
+            },
+          ],
           children: [],
+        },
+      ],
+    });
+  });
+
+  it('should correctly parse tag with children', () => {
+    const ast = parseTokens(tokenizer(t`<div><p> </p></div>`));
+
+    expect(ast).to.deep.equal({
+      kind: AstKind.Root,
+      children: [
+        {
+          kind: AstKind.Child,
+          type: ChildType.Node,
+          tag: 'div',
+          attributes: [],
+          children: [
+            {
+              kind: AstKind.Child,
+              type: ChildType.Node,
+              tag: 'p',
+              attributes: [],
+              children: [
+                {
+                  kind: AstKind.Child,
+                  type: ChildType.Text,
+                  value: ' ',
+                },
+              ],
+            },
+          ],
         },
       ],
     });
@@ -130,44 +109,42 @@ describe('parser', () => {
   it('should correctly parse composite property value', () => {
     const A = { foo: 0 };
 
-    const ast = parseTokens(
-      tokenizer(
-        mergeTemplateSegments({
-          dynamic: [A],
-          static: ['<div class="box ', ' lg" />'],
-        })
-      )
-    );
+    const ast = parseTokens(tokenizer(t`<div class="box ${A} lg" />`));
 
     expect(ast).to.deep.equal({
-      kind: AstKind.Child,
-      type: ChildType.Node,
-      tag: 'div',
-      attributes: [
+      kind: AstKind.Root,
+      children: [
         {
-          kind: AstKind.Attribute,
-          type: AttributeType.Composite,
-          key: 'class',
-          value: [
+          kind: AstKind.Child,
+          type: ChildType.Node,
+          tag: 'div',
+          attributes: [
             {
-              kind: AstKind.Composite,
-              type: AttributeType.Text,
-              value: 'box ',
-            },
-            {
-              kind: AstKind.Composite,
-              type: AttributeType.Data,
-              value: A,
-            },
-            {
-              kind: AstKind.Composite,
-              type: AttributeType.Text,
-              value: ' lg',
+              kind: AstKind.Attribute,
+              type: AttributeType.Composite,
+              key: 'class',
+              value: [
+                {
+                  kind: AstKind.Composite,
+                  type: AttributeType.Text,
+                  value: 'box ',
+                },
+                {
+                  kind: AstKind.Composite,
+                  type: AttributeType.Data,
+                  value: A,
+                },
+                {
+                  kind: AstKind.Composite,
+                  type: AttributeType.Text,
+                  value: ' lg',
+                },
+              ],
             },
           ],
+          children: [],
         },
       ],
-      children: [],
     });
   });
 });
