@@ -3,10 +3,11 @@ import { tokenizer } from '!tokenizer/index';
 import { mergeTemplateSegments } from '!util/mergeTemplateSegments';
 
 export {
-  AstKind,
+  AstRoot,
   AstChild,
   AstAttribute,
   AstAttributeComposite,
+  AstKind,
   ChildType,
   AttributeType,
 } from '!types/AbstractSyntaxTree';
