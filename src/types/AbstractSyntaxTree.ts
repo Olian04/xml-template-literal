@@ -1,3 +1,4 @@
+// Enums in this file should not be marked as "const" since these enums are part of the API
 export enum AstKind {
   Root = 'Root',
   Child = 'Child',

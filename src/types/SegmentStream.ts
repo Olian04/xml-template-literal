@@ -1,4 +1,4 @@
-export enum SegmentType {
+export const enum SegmentType {
   Static = 'Static',
   Dynamic = 'Dynamic',
 }
