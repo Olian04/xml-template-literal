@@ -54,3 +54,91 @@ import { xml } from 'xml-template-literal';
 ## Demos
 
 - Parse and render HTML: <https://jsfiddle.net/tqa24c1h/12>
+
+## AST Format & Types
+
+### AstRoot
+
+*`AstRoot` is the type returned by the `xml` template literal tag function & the parseXml function call.*
+
+```ts
+type AstRoot<T> = {
+  kind: AstKind.Root;
+  children: AstChild<T>[];
+}
+```
+
+### AstChild
+
+```ts
+type AstChild<T> = TextChild | DataChild<T> | NodeChild<T>
+
+type TextChild = {
+  kind: AstKind.Child;
+  type: ChildType.Text;
+  value: string;
+};
+
+type DataChild<T> = {
+  kind: AstKind.Child;
+  type: ChildType.Data;
+  value: T;
+};
+
+type NodeChild<T> = {
+  kind: AstKind.Child;
+  type: ChildType.Node;
+  tag: string;
+  children: AstChild<T>[];
+  attributes: AstAttribute<T>[];
+};
+
+```
+
+### AstAttribute
+
+```ts
+type AstAttribute<T> = TextAttribute | DataAttribute<T> | CompositeAttribute<T>;
+
+// key="text_value"
+type TextAttribute = {
+  kind: AstKind.Attribute;
+  type: AttributeType.Text;
+  key: string;
+  value: string;
+};
+
+// key=${data_value}
+type DataAttribute<T> = {
+  kind: AstKind.Attribute;
+  type: AttributeType.Data;
+  key: string;
+  value: T;
+};
+
+// key="text_value_one ${data_value} text_value_two"
+type CompositeAttribute<T> = {
+  kind: AstKind.Attribute;
+  type: AttributeType.Composite;
+  key: string;
+  value: AstAttributeComposite<T>[];
+};
+```
+
+### AstAttributeComposite
+
+```ts
+type AstAttributeComposite<T> = TextComposite | DataComposite<T>;
+
+type TextComposite = {
+  kind: AstKind.Composite;
+  type: AttributeType.Text;
+  value: string;
+};
+
+type DataComposite<T> = {
+  kind: AstKind.Composite;
+  type: AttributeType.Data;
+  value: T;
+};
+```
