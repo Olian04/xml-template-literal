@@ -9,7 +9,7 @@
     "prepublishOnly": "npm run build",
     "test": "mocha",
     "build": "rimraf ./dist && rollup --config",
-    "demo:hello": "ts-node ./demo/helloWorld.ts"
+    "demo:hello": "ts-node ./demos/helloWorld.ts"
   },
   "keywords": [
     "xml",
