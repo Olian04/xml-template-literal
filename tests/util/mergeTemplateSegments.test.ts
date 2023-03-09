@@ -5,7 +5,7 @@ import { mergeTemplateSegments } from '!util/mergeTemplateSegments';
 import { SegmentType } from '!types/SegmentStream';
 
 describe('mergeTemplateSegments', () => {
-  it('should throw error when providing invalid ammount of segments', () => {
+  it('should throw error when providing invalid amount of segments', () => {
     expect(() => {
       mergeTemplateSegments({
         dynamic: [],

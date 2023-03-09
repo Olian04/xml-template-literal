@@ -14,7 +14,6 @@ export const parseChildren = <T>(
     tok.current.value !== '</'
   ) {
     children.push(parseChild(tok));
-    nextToken(tok, false);
   }
   return children;
 }

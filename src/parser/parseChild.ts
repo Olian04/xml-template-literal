@@ -9,7 +9,6 @@ import { assertSyntax } from '!parser/util/assertSyntax';
 import { nextToken } from '!parser/util/nextToken';
 import { parseChildren } from '!parser/parseChildren';
 import { parseAttributes } from '!parser/parseAttributes';
-import { UnexpectedToken } from '!errors/UnexpectedToken';
 
 const parseTag = <T>(
   tok: ConsumeStream<Token<T>>,
@@ -38,7 +37,7 @@ export const parseNodeChild = <T>(
     };
   }
   assertSyntax('>', tok);
-  nextToken(tok);
+  nextToken(tok, false);
   const children = parseChildren(tok);
   assertSyntax('</', tok);
   nextToken(tok);
@@ -78,6 +77,7 @@ export const parseChild = <T>(
 ): AstChild<T> => {
   if (tok.current.kind === TokenKind.Data) {
     const value = tok.current.value;
+    nextToken(tok, false);
     return {
       kind: AstKind.Child,
       type: ChildType.Data,
@@ -94,7 +94,9 @@ export const parseChild = <T>(
     tok.current.kind === TokenKind.Syntax &&
     tok.current.value === '<'
   ) {
-    return parseNodeChild(tok);
+    const node = parseNodeChild(tok);
+    nextToken(tok, false);
+    return node;
   }
   throw new Error(`UnexpectedToken: Expected either "<", a Data token, a Text token, or a Whitespace token. But got ${tok.current.kind} token with value "${tok.current.value}"`)
 };

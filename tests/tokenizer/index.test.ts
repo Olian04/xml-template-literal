@@ -130,6 +130,21 @@ describe('tokenizer', () => {
     ]);
   });
 
+  it('should correctly tokenize text and data', () => {
+    const A = { foo: 0 };
+    const tok = tokenizer(t` pre ${A} post `);
+
+    expect([...tok].map((v: Token<any>) => v.value)).to.deep.equal([
+      ' ',
+      'pre',
+      ' ',
+      A,
+      ' ',
+      'post',
+      ' ',
+    ]);
+  });
+
   it('should handle a real usage scenario', () => {
     const A = { foo: 0 };
     const B = [1, 2, 3];

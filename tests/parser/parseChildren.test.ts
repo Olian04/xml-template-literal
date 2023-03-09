@@ -58,8 +58,33 @@ describe('parseChildren', () => {
     ]);
   });
 
+  it('should correctly parse text and data children (pre & post)', () => {
+    const A = { foo: 0 }
+    const pre = parseChildren(
+      createConsumeStream(tokenizer(t` pre ${A} post `))
+    );
+
+    expect(pre).to.deep.equal([
+      {
+        kind: AstKind.Child,
+        type: ChildType.Text,
+        value: ' pre ',
+      },
+      {
+        kind: AstKind.Child,
+        type: ChildType.Data,
+        value: A,
+      },
+      {
+        kind: AstKind.Child,
+        type: ChildType.Text,
+        value: ' post ',
+      },
+    ]);
+  });
+
   it('should correctly parse text and data children (pre)', () => {
-    const A = { foo: 0 };
+    const A = { foo: 0 }
     const pre = parseChildren(
       createConsumeStream(tokenizer(t` pre ${A}`))
     );
