@@ -116,7 +116,7 @@ type DataAttribute<T> = {
   value: T;
 };
 
-// key="text_value_one ${data_value} text_value_two"
+// key="text_value ${data_value}"
 type CompositeAttribute<T> = {
   kind: AstKind.Attribute;
   type: AttributeType.Composite;
