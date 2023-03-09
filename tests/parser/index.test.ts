@@ -18,10 +18,11 @@ export const t = <T>(
   });
 
 describe('parser', () => {
-  it('should throw when provided an empty input', () => {
-    expect(() => {
-      parseTokens(tokenizer(t``));
-    }).to.throw(UnexpectedEOF);
+  it('should return empty root when provided an empty input', () => {
+    expect(parseTokens(tokenizer(t``))).to.deep.equal({
+      kind: AstKind.Root,
+      children: [],
+    });
   });
 
   it('should throw when provided invalid syntax in input', () => {
