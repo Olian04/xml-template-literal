@@ -1,17 +1,17 @@
-export const enum AstKind {
+export enum AstKind {
   Root = 'Root',
   Child = 'Child',
   Attribute = 'Attribute',
   Composite = 'Composite',
 }
 
-export const enum ChildType {
+export enum ChildType {
   Node = 'Node',
   Text = 'Text',
   Data = 'Data',
 }
 
-export const enum AttributeType {
+export enum AttributeType {
   Text = 'Text',
   Data = 'Data',
   Composite = 'Composite',

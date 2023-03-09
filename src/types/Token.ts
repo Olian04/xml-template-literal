@@ -1,4 +1,4 @@
-export const enum TokenKind {
+export enum TokenKind {
   Syntax = 'Syntax',
   Data = 'Data',
   Text = 'Text',

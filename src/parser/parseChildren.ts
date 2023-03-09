@@ -3,7 +3,6 @@ import type { AstChild } from "!types/AbstractSyntaxTree";
 import type { ConsumeStream } from "!types/ConsumeStream";
 
 import { parseChild } from "!parser/parseChild";
-import { nextToken } from "!parser/util/nextToken";
 
 export const parseChildren = <T>(
   tok: ConsumeStream<Token<T>>

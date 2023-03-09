@@ -45,7 +45,7 @@ import { xml } from 'xml-template-literal';
 #### UMD
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/xml-template-literal/cdn/xml-template-literal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xml-template-literal/dist/api.umd.js"></script>
 <script>
   const { xml } = xmlTemplateLiteral;
 </script>

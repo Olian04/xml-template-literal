@@ -1,13 +1,10 @@
 {
   "name": "xml-template-literal",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "description": "A template literal tag function for parsing xml.",
   "browser": "cdn/api.es.js",
   "main": "dist/api.js",
   "types": "dist/api.d.ts",
-  "_moduleAliases": {
-    "@": "dist"
-  },
   "scripts": {
     "prepublishOnly": "npm run build",
     "test": "mocha",
