@@ -1,4 +1,4 @@
-import type { AstAttribute, AstChild } from '!types/AbstractSyntaxTree';
+import type { AstChild } from '!types/AbstractSyntaxTree';
 import type { ConsumeStream } from '!types/ConsumeStream';
 import type { Token } from '!types/Token';
 import { TokenKind } from '!types/Token';
@@ -7,23 +7,27 @@ import { AstKind, ChildType } from '!types/AbstractSyntaxTree';
 import { assert } from '!parser/util/assert';
 import { assertSyntax } from '!parser/util/assertSyntax';
 import { nextToken } from '!parser/util/nextToken';
-import { parseAttribute } from '!parser//parseAttribute';
+import { parseChildren } from '!parser/parseChildren';
+import { parseAttributes } from '!parser/parseAttributes';
+
+const parseTag = <T>(
+  tok: ConsumeStream<Token<T>>,
+): string => {
+  assert('kind', TokenKind.Text, tok);
+  const tag = tok.current.value as string;
+  nextToken(tok);
+  return tag;
+}
 
 export const parseNodeChild = <T>(
   tok: ConsumeStream<Token<T>>
 ): AstChild<T> => {
-  assertSyntax('<', tok.current);
+  assertSyntax('<', tok);
   nextToken(tok);
-  assert('kind', TokenKind.Text, tok.current);
-  const tag = tok.current.value as string;
-  nextToken(tok);
-  const attributes: AstAttribute<T>[] = [];
-  while (tok.current.kind === TokenKind.Text) {
-    attributes.push(parseAttribute(tok));
-    nextToken(tok);
-  }
+  const tag = parseTag(tok);
+  const attributes = parseAttributes(tok);
   if (tok.current.value === '/>') {
-    assertSyntax('/>', tok.current);
+    assertSyntax('/>', tok);
     return {
       kind: AstKind.Child,
       type: ChildType.Node,
@@ -32,21 +36,14 @@ export const parseNodeChild = <T>(
       children: [],
     };
   }
-  assertSyntax('>', tok.current);
+  assertSyntax('>', tok);
   nextToken(tok, false);
-  const children: AstChild<T>[] = [];
-  while (tok.current.value !== '</') {
-    children.push(parseChild(tok));
-    if (tok.current.value === '</') {
-      break;
-    }
-    nextToken(tok, false);
-  }
-  assertSyntax('</', tok.current);
+  const children = parseChildren(tok);
+  assertSyntax('</', tok);
   nextToken(tok);
-  assert('value', tag, tok.current);
+  assert('value', tag, tok);
   nextToken(tok);
-  assertSyntax('>', tok.current);
+  assertSyntax('>', tok);
   return {
     kind: AstKind.Child,
     type: ChildType.Node,
@@ -75,12 +72,16 @@ export const parseTextChild = <T>(
   };
 };
 
-export const parseChild = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
+export const parseChild = <T>(
+  tok: ConsumeStream<Token<T>>
+): AstChild<T> => {
   if (tok.current.kind === TokenKind.Data) {
+    const value = tok.current.value;
+    nextToken(tok, false);
     return {
       kind: AstKind.Child,
       type: ChildType.Data,
-      value: tok.current.value,
+      value,
     };
   }
   if (
@@ -89,5 +90,13 @@ export const parseChild = <T>(tok: ConsumeStream<Token<T>>): AstChild<T> => {
   ) {
     return parseTextChild(tok);
   }
-  return parseNodeChild(tok);
+  if (
+    tok.current.kind === TokenKind.Syntax &&
+    tok.current.value === '<'
+  ) {
+    const node = parseNodeChild(tok);
+    nextToken(tok, false);
+    return node;
+  }
+  throw new Error(`UnexpectedToken: Expected either "<", a Data token, a Text token, or a Whitespace token. But got ${tok.current.kind} token with value "${tok.current.value}"`)
 };

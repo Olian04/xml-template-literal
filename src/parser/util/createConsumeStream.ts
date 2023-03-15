@@ -1,11 +1,10 @@
-import type { Token } from '!types/Token';
-import { UnexpectedEOF } from '!errors/UnexpectedEOF';
+import { EndOfFileToken, Token, TokenKind } from '!types/Token';
 import { ConsumeStream } from '!types/ConsumeStream';
 
-export const createConsumeStream = <V, T extends Token<V>>(
-  gen: Generator<T>
-): ConsumeStream<T> => {
-  let cache: { next?: IteratorResult<T>; previous?: IteratorResult<T> } = {};
+export const createConsumeStream = <T>(
+  gen: Generator<Token<T>>
+): ConsumeStream<Token<T>> => {
+  let cache: { next?: IteratorResult<Token<T>>; previous?: IteratorResult<Token<T>> } = {};
 
   const next = () => {
     if (!('next' in cache)) {
@@ -19,20 +18,20 @@ export const createConsumeStream = <V, T extends Token<V>>(
       delete cache.next;
       next();
     },
+    get previous() {
+      return cache.previous?.value as Token<T>;
+    },
     get done() {
       return Boolean(next().done);
     },
     get current() {
       if (api.done) {
-        if ('previous' in cache && 'next' in cache) {
-          throw new UnexpectedEOF(`${cache.previous?.value?.value}`);
-        } else if ('next' in cache) {
-          throw new UnexpectedEOF(`${cache.next?.value?.value}`);
-        } else {
-          throw new UnexpectedEOF();
-        }
+        return {
+          kind: TokenKind.EndOfFile,
+          value: null,
+        } as EndOfFileToken;
       }
-      return next().value as T;
+      return next().value as Token<T>;
     },
   };
 

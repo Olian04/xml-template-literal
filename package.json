@@ -1,6 +1,6 @@
 {
   "name": "xml-template-literal",
-  "version": "0.1.1",
+  "version": "0.2.5",
   "description": "A template literal tag function for parsing xml.",
   "browser": "cdn/api.es.js",
   "main": "dist/api.js",
@@ -12,7 +12,7 @@
     "prepublishOnly": "npm run build",
     "test": "mocha",
     "build": "rimraf ./dist && rollup --config",
-    "demo:hello": "ts-node ./demo/helloWorld.ts"
+    "demo:hello": "ts-node ./demos/helloWorld.ts"
   },
   "keywords": [
     "xml",

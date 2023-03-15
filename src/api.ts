@@ -4,6 +4,7 @@ import { mergeTemplateSegments } from '!util/mergeTemplateSegments';
 
 export {
   AstKind,
+  AstRoot,
   AstChild,
   AstAttribute,
   AstAttributeComposite,

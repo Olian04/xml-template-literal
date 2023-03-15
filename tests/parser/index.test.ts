@@ -18,10 +18,11 @@ export const t = <T>(
   });
 
 describe('parser', () => {
-  it('should throw when provided an empty input', () => {
-    expect(() => {
-      parseTokens(tokenizer(t``));
-    }).to.throw(UnexpectedEOF);
+  it('should return empty root when provided an empty input', () => {
+    expect(parseTokens(tokenizer(t``))).to.deep.equal({
+      kind: AstKind.Root,
+      children: [],
+    });
   });
 
   it('should throw when provided invalid syntax in input', () => {
@@ -48,24 +49,29 @@ describe('parser', () => {
       tokenizer(t`<someTag property="value" prop=${A}></someTag>`)
     );
     expect(ast).to.deep.equal({
-      kind: AstKind.Child,
-      type: ChildType.Node,
-      tag: 'someTag',
-      attributes: [
+      kind: AstKind.Root,
+      children: [
         {
-          kind: AstKind.Attribute,
-          type: AttributeType.Text,
-          key: 'property',
-          value: 'value',
-        },
-        {
-          kind: AstKind.Attribute,
-          type: AttributeType.Data,
-          key: 'prop',
-          value: A,
+          kind: AstKind.Child,
+          type: ChildType.Node,
+          tag: 'someTag',
+          attributes: [
+            {
+              kind: AstKind.Attribute,
+              type: AttributeType.Text,
+              key: 'property',
+              value: 'value',
+            },
+            {
+              kind: AstKind.Attribute,
+              type: AttributeType.Data,
+              key: 'prop',
+              value: A,
+            },
+          ],
+          children: [],
         },
       ],
-      children: [],
     });
   });
 
@@ -73,21 +79,26 @@ describe('parser', () => {
     const ast = parseTokens(tokenizer(t`<div><p> </p></div>`));
 
     expect(ast).to.deep.equal({
-      kind: AstKind.Child,
-      type: ChildType.Node,
-      tag: 'div',
-      attributes: [],
+      kind: AstKind.Root,
       children: [
         {
           kind: AstKind.Child,
           type: ChildType.Node,
-          tag: 'p',
+          tag: 'div',
           attributes: [],
           children: [
             {
               kind: AstKind.Child,
-              type: ChildType.Text,
-              value: ' ',
+              type: ChildType.Node,
+              tag: 'p',
+              attributes: [],
+              children: [
+                {
+                  kind: AstKind.Child,
+                  type: ChildType.Text,
+                  value: ' ',
+                },
+              ],
             },
           ],
         },
@@ -101,34 +112,39 @@ describe('parser', () => {
     const ast = parseTokens(tokenizer(t`<div class="box ${A} lg" />`));
 
     expect(ast).to.deep.equal({
-      kind: AstKind.Child,
-      type: ChildType.Node,
-      tag: 'div',
-      attributes: [
+      kind: AstKind.Root,
+      children: [
         {
-          kind: AstKind.Attribute,
-          type: AttributeType.Composite,
-          key: 'class',
-          value: [
+          kind: AstKind.Child,
+          type: ChildType.Node,
+          tag: 'div',
+          attributes: [
             {
-              kind: AstKind.Composite,
-              type: AttributeType.Text,
-              value: 'box ',
-            },
-            {
-              kind: AstKind.Composite,
-              type: AttributeType.Data,
-              value: A,
-            },
-            {
-              kind: AstKind.Composite,
-              type: AttributeType.Text,
-              value: ' lg',
+              kind: AstKind.Attribute,
+              type: AttributeType.Composite,
+              key: 'class',
+              value: [
+                {
+                  kind: AstKind.Composite,
+                  type: AttributeType.Text,
+                  value: 'box ',
+                },
+                {
+                  kind: AstKind.Composite,
+                  type: AttributeType.Data,
+                  value: A,
+                },
+                {
+                  kind: AstKind.Composite,
+                  type: AttributeType.Text,
+                  value: ' lg',
+                },
+              ],
             },
           ],
+          children: [],
         },
       ],
-      children: [],
     });
   });
 });

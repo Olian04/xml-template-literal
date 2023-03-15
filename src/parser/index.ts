@@ -1,12 +1,10 @@
-import type { AstChild } from '!types/AbstractSyntaxTree';
+import { AstKind, AstRoot } from '!types/AbstractSyntaxTree';
 import type { Token } from '!types/Token';
 
 import { createConsumeStream } from '!parser/util/createConsumeStream';
-import { parseChild } from '!parser//parseChild';
-import { skipWhitespace } from '!parser//util/skipWhitespace';
+import { parseChildren } from '!parser/parseChildren';
 
-export const parseTokens = <T>(tokens: Generator<Token<T>>): AstChild<T> => {
-  const tok = createConsumeStream(tokens);
-  skipWhitespace(tok);
-  return parseChild(tok);
-};
+export const parseTokens = <T>(tokens: Generator<Token<T>>): AstRoot<T> => ({
+  kind: AstKind.Root,
+  children: parseChildren(createConsumeStream(tokens)),
+});

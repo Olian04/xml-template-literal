@@ -22,4 +22,5 @@ export function* tokenizer<T>(segments: SegmentStream<T>): Generator<Token<T>> {
       throw new Error(`Unknown segment: ${segment}`);
     }
   }
+  return
 }
