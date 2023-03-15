@@ -44,7 +44,7 @@ describe('api', () => {
               value: 'Hello, world!',
             },
           ],
-        }
+        },
       ],
     });
   });
@@ -78,37 +78,6 @@ describe('api', () => {
               value: '!',
             },
           ],
-        }
-      ],
-    });
-  });
-
-  it('should work for an "Hello, ${name}!" example ', () => {
-    const name = 'Oliver';
-    const ast = xml`
-      <div>Hello, ${name}!</div>
-    `;
-
-    expect(ast).to.deep.equal({
-      kind: AstKind.Child,
-      type: ChildType.Node,
-      tag: 'div',
-      attributes: [],
-      children: [
-        {
-          kind: AstKind.Child,
-          type: ChildType.Text,
-          value: 'Hello, ',
-        },
-        {
-          kind: AstKind.Child,
-          type: ChildType.Data,
-          value: name,
-        },
-        {
-          kind: AstKind.Child,
-          type: ChildType.Text,
-          value: '!',
         },
       ],
     });
