@@ -45,7 +45,7 @@ const { xml } = require('xml-template-literal/legacy/umd.js');
 
 ```html
 <script type="module">
-  import { xml } from 'https://cdn.jsdelivr.net/npm/xml-template-literal';
+  import { xml } from 'https://cdn.jsdelivr.net/npm/xml-template-literal/dist/api.js';
 </script>
 ```
 
@@ -60,7 +60,7 @@ const { xml } = require('xml-template-literal/legacy/umd.js');
 
 ## Demos
 
-- Parse and render HTML: <https://jsfiddle.net/2q7fpa6g/3/>
+- Parse and render HTML: <https://jsfiddle.net/bq7m4uhw/30/>
 
 ## AST Format & Types
 
