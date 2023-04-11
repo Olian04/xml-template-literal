@@ -1,9 +1,8 @@
-import { describe, it } from 'mocha';
-import { expect } from 'chai';
+import { describe, it, expect } from 'vitest';
 
-import type { Token } from '!types/Token';
-import { tokenizeString } from '!tokenizer/tokenizeString';
-import { accumulateTextTokens } from '!tokenizer/accumulateTextTokens';
+import type { Token } from '../../src/types/Token';
+import { tokenizeString } from '../../src/tokenizer/tokenizeString';
+import { accumulateTextTokens } from '../../src/tokenizer/accumulateTextTokens';
 
 describe('accumulateTextTokens', () => {
   it('should correctly tokenize naked tag', () => {

@@ -24,7 +24,7 @@ const ast = xml`
 
 ## Installation
 
-### NPM
+### NPM - ESM
 
 [`npm i xml-template-literal`](https://www.npmjs.com/package/xml-template-literal)
 
@@ -32,9 +32,15 @@ const ast = xml`
 import { xml } from 'xml-template-literal';
 ```
 
-### CDN
+### NPM - UMD
 
-#### ESM
+[`npm i xml-template-literal`](https://www.npmjs.com/package/xml-template-literal)
+
+```js
+const { xml } = require('xml-template-literal/legacy/umd.js');
+```
+
+### CDN - ESM
 
 ```html
 <script type="module">
@@ -42,10 +48,10 @@ import { xml } from 'xml-template-literal';
 </script>
 ```
 
-#### UMD
+#### CDN - UMD
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/xml-template-literal/dist/api.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xml-template-literal/legacy/umd.js"></script>
 <script>
   const { xml } = xmlTemplateLiteral;
 </script>

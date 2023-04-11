@@ -1,7 +1,7 @@
-import { UnexpectedEOF } from '!errors/UnexpectedEOF';
-import { UnexpectedToken } from '!errors/UnexpectedToken';
-import { ConsumeStream } from '!types/ConsumeStream';
-import { Token, TokenKind } from '!types/Token';
+import { UnexpectedEOF } from '../../errors/UnexpectedEOF.js';
+import { UnexpectedToken } from '../../errors/UnexpectedToken.js';
+import { ConsumeStream } from '../../types/ConsumeStream.js';
+import { Token, TokenKind } from '../../types/Token.js';
 
 export const assert = (
   key: 'value' | 'kind',

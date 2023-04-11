@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "node16",
+    "moduleResolution": "node16",
     "lib": ["esnext", "dom"],
     "outDir": "dist/",
     "declaration": true,
@@ -13,10 +13,6 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "strict": true,
-    "baseUrl": "./src/",
-    "paths": {
-      "!*": ["*"]
-    }
   },
-  "include": ["src/**/*.ts", "tests/**/*.test.ts", "node_modules/symbols.ts"]
+  "include": ["src/**/*.ts"]
 }

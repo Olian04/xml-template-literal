@@ -1,8 +1,7 @@
-import { describe, it } from 'mocha';
-import { expect } from 'chai';
+import { describe, it, expect } from 'vitest';
 
-import { mergeTemplateSegments } from '!util/mergeTemplateSegments';
-import { SegmentType } from '!types/SegmentStream';
+import { mergeTemplateSegments } from '../../src/util/mergeTemplateSegments';
+import { SegmentType } from '../../src/types/SegmentStream';
 
 describe('mergeTemplateSegments', () => {
   it('should throw error when providing invalid amount of segments', () => {

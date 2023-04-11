@@ -1,9 +1,8 @@
-import { describe, it } from 'mocha';
-import { expect } from 'chai';
+import { describe, it, expect } from 'vitest';
 
-import type { Token } from '!types/Token';
-import { tokenizeString } from '!tokenizer/tokenizeString';
-import { produceJoinedSyntaxTokens } from '!tokenizer/produceJoinedSyntaxTokens';
+import type { Token } from '../../src/types/Token';
+import { tokenizeString } from '../../src/tokenizer/tokenizeString';
+import { produceJoinedSyntaxTokens } from '../../src/tokenizer/produceJoinedSyntaxTokens';
 
 describe('produceJoinedSyntaxTokens', () => {
   it('should correctly tokenize naked tag', () => {

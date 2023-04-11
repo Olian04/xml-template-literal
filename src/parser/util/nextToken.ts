@@ -1,6 +1,6 @@
-import type { ConsumeStream } from '!types/ConsumeStream';
-import type { Token } from '!types/Token';
-import { skipWhitespace } from '!parser/util/skipWhitespace';
+import type { ConsumeStream } from '../../types/ConsumeStream.js';
+import type { Token } from '../../types/Token.js';
+import { skipWhitespace } from '../../parser/util/skipWhitespace.js';
 
 export const nextToken = (
   tok: ConsumeStream<Token<unknown>>,

@@ -1,7 +1,6 @@
-import { describe, it } from 'mocha';
-import { expect } from 'chai';
+import { describe, it, expect } from 'vitest';
 
-import { xml, AstKind, ChildType } from '!api';
+import { xml, AstKind, ChildType } from '../dist/api';
 
 describe('api', () => {
   it('should expose XML template literal function', () => {

@@ -1,4 +1,4 @@
-import { SegmentStream, SegmentType } from '!types/SegmentStream';
+import { SegmentStream, SegmentType } from '../types/SegmentStream.js';
 
 const isStaticSegment = (v: number) => v % 2 === 0;
 
