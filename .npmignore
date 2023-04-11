@@ -1,6 +1,6 @@
 .gitignore
 .editorconfig
-.mocharc.js
+.mocharc.cjs
 rollup.config.mjs
 tsconfig.json
 tsconfig.prod.json
@@ -10,3 +10,4 @@ tsconfig.prod.json
 demos/
 node_modules/
 tests/
+coverage/

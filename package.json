@@ -1,6 +1,6 @@
 {
   "name": "xml-template-literal",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A template literal tag function for parsing xml.",
   "type": "module",
   "exports": {
@@ -9,7 +9,6 @@
     "types": "./dist/api.d.ts"
   },
   "main": "./legacy/umd.js",
-  "browser": "./dist/api.js",
   "types": "./dist/api.d.ts",
   "node": ">=14.16",
   "scripts": {
