@@ -1,11 +1,10 @@
-import { describe, it } from 'mocha';
-import { expect } from 'chai';
+import { describe, it, expect } from 'vitest';
 
-import { mergeTemplateSegments } from '!util/mergeTemplateSegments';
-import { tokenizer } from '!tokenizer';
-import { createConsumeStream } from '!parser/util/createConsumeStream';
-import { AstKind, ChildType } from '!types/AbstractSyntaxTree';
-import { parseChildren } from '!parser/parseChildren';
+import { mergeTemplateSegments } from '../../src/util/mergeTemplateSegments';
+import { tokenizer } from '../../src/tokenizer';
+import { createConsumeStream } from '../../src/parser/util/createConsumeStream';
+import { AstKind, ChildType } from '../../src/types/AbstractSyntaxTree';
+import { parseChildren } from '../../src/parser/parseChildren';
 
 export const t = <T>(
   staticSegments: TemplateStringsArray,

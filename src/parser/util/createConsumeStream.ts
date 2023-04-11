@@ -1,5 +1,5 @@
-import { EndOfFileToken, Token, TokenKind } from '!types/Token';
-import { ConsumeStream } from '!types/ConsumeStream';
+import { EndOfFileToken, Token, TokenKind } from '../../types/Token.js';
+import { ConsumeStream } from '../../types/ConsumeStream.js';
 
 export const createConsumeStream = <T>(
   gen: Generator<Token<T>>

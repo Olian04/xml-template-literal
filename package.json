@@ -1,15 +1,26 @@
 {
   "name": "xml-template-literal",
-  "version": "0.2.5",
+  "version": "0.3.0",
   "description": "A template literal tag function for parsing xml.",
-  "browser": "cdn/api.es.js",
-  "main": "dist/api.js",
-  "types": "dist/api.d.ts",
+  "type": "module",
+  "exports": {
+    "require": "./legacy/umd.js",
+    "import": "./dist/api.js",
+    "types": "./dist/api.d.ts"
+  },
+  "main": "./legacy/umd.js",
+  "browser": "./legacy/umd.js",
+  "types": "./dist/api.d.ts",
+  "node": ">=14.16",
   "scripts": {
     "prepublishOnly": "npm run build",
-    "test": "mocha",
-    "build": "rimraf ./dist && rollup --config",
-    "demo:hello": "ts-node ./demos/helloWorld.ts"
+    "test": "vitest run --coverage",
+    "build": "npm run build:esm && npm run build:umd",
+    "build:esm": "rimraf ./dist && tsc",
+    "build:umd": "rimraf ./legacy && rollup --config",
+    "demo:esm": "node ./demos/esm.mjs",
+    "demo:umd": "node ./demos/umd.cjs",
+    "upload:coverage": "codecov"
   },
   "keywords": [
     "xml",
@@ -29,25 +40,16 @@
   "homepage": "https://github.com/Olian04/xml-template-literal#readme",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^24.0.1",
-    "@rollup/plugin-node-resolve": "^15.0.1",
-    "@rollup/plugin-terser": "^0.4.0",
-    "@rollup/plugin-typescript": "^11.0.0",
-    "@types/chai": "^4.3.4",
-    "@types/es6-promise": "3.3.0",
-    "@types/mocha": "^10.0.1",
+    "@rollup/plugin-node-resolve": "^15.0.2",
+    "@rollup/plugin-terser": "^0.4.1",
+    "@rollup/plugin-typescript": "^11.1.0",
     "@types/rollup-plugin-commonjs": "^9.3.1",
     "@types/rollup-plugin-node-resolve": "^4.1.0",
-    "@types/typescript": "^2.0.0",
-    "chai": "^4.3.7",
-    "http-server": "^14.1.1",
-    "mocha": "^10.2.0",
-    "rimraf": "^4.3.0",
-    "rollup": "3.18.0",
-    "ts-node": "^10.9.1",
-    "tsconfig-paths": "^3.14.2",
-    "tslib": "^2.5.0",
-    "ttypescript": "^1.5.15",
-    "typescript": "^4.9.5",
-    "typescript-transform-paths": "^3.4.6"
+    "@vitest/coverage-c8": "^0.30.1",
+    "codecov": "^3.8.3",
+    "rimraf": "^5.0.0",
+    "rollup": "3.20.2",
+    "typescript": "^5.0.4",
+    "vitest": "^0.30.1"
   }
 }

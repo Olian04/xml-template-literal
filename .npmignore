@@ -9,5 +9,4 @@ tsconfig.prod.json
 .trunk
 demos/
 node_modules/
-src/
 tests/

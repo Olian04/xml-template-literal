@@ -1,10 +1,9 @@
-import type { Token } from "!types/Token";
-import type { AstAttribute } from "!api";
-import type { ConsumeStream } from "!types/ConsumeStream";
+import type { AstAttribute } from '../types/AbstractSyntaxTree.js';
+import type { ConsumeStream } from '../types/ConsumeStream.js';
+import { TokenKind, type Token } from '../types/Token.js';
 
-import { TokenKind } from "!types/Token";
-import { parseAttribute } from "!parser/parseAttribute";
-import { nextToken } from "!parser/util/nextToken";
+import { parseAttribute } from './parseAttribute.js';
+import { nextToken } from './util/nextToken.js';
 
 export const parseAttributes = <T>(
   tok: ConsumeStream<Token<T>>

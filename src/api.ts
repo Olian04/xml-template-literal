@@ -1,16 +1,16 @@
-import { parseTokens } from '!parser/index';
-import { tokenizer } from '!tokenizer/index';
-import { mergeTemplateSegments } from '!util/mergeTemplateSegments';
+import { parseTokens } from './parser/index.js';
+import { tokenizer } from './tokenizer/index.js';
+import { mergeTemplateSegments } from './util/mergeTemplateSegments.js';
 
 export {
+  AstKind,
   AstRoot,
   AstChild,
   AstAttribute,
   AstAttributeComposite,
-  AstKind,
   ChildType,
   AttributeType,
-} from '!types/AbstractSyntaxTree';
+} from './types/AbstractSyntaxTree.js';
 
 export const parseXml = (xmlString: string) =>
   parseTokens(

@@ -1,5 +1,4 @@
-import type { StaticToken } from '!types/Token';
-import { TokenKind } from '!types/Token';
+import { TokenKind, type StaticToken } from '../types/Token.js';
 
 export function* tokenizeString(input: string): Generator<StaticToken> {
   for (const char of input) {

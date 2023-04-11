@@ -1,11 +1,10 @@
-import { describe, it } from 'mocha';
-import { expect } from 'chai';
+import { describe, it, expect } from 'vitest';
 
-import { mergeTemplateSegments } from '!util/mergeTemplateSegments';
-import { tokenizer } from '!tokenizer';
-import { parseChild } from '!parser/parseChild';
-import { createConsumeStream } from '!parser/util/createConsumeStream';
-import { AstKind, ChildType } from '!types/AbstractSyntaxTree';
+import { mergeTemplateSegments } from '../../src/util/mergeTemplateSegments';
+import { tokenizer } from '../../src/tokenizer';
+import { parseChild } from '../../src/parser/parseChild';
+import { createConsumeStream } from '../../src/parser/util/createConsumeStream';
+import { AstKind, ChildType } from '../../src/types/AbstractSyntaxTree';
 
 export const t = <T>(
   staticSegments: TemplateStringsArray,
@@ -19,7 +18,6 @@ export const t = <T>(
 describe('parseChild', () => {
   it('should produce the same AST when parsing a regular tag and an equivalent self-closing tag', () => {
     const regular = parseChild(createConsumeStream(tokenizer(t`<div></div>`)));
-
     const selfClose = parseChild(createConsumeStream(tokenizer(t`<div/>`)));
 
     expect(regular).to.deep.equal(selfClose);

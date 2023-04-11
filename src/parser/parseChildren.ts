@@ -1,8 +1,8 @@
-import { Token, TokenKind } from "!types/Token";
-import type { AstChild } from "!types/AbstractSyntaxTree";
-import type { ConsumeStream } from "!types/ConsumeStream";
+import { TokenKind, type Token } from '../types/Token.js';
+import type { AstChild } from '../types/AbstractSyntaxTree.js';
+import type { ConsumeStream } from '../types/ConsumeStream.js';
 
-import { parseChild } from "!parser/parseChild";
+import { parseChild } from './parseChild.js';
 
 export const parseChildren = <T>(
   tok: ConsumeStream<Token<T>>

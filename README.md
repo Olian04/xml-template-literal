@@ -4,6 +4,7 @@
 [![Downloads from NPM](https://img.shields.io/npm/dm/xml-template-literal?label=downloads%20npm)](https://www.npmjs.com/package/xml-template-literal)
 [![Downloads from JSDeliver](https://img.shields.io/jsdelivr/npm/hm/xml-template-literal?label=downloads%20jsDelivr)](https://www.jsdelivr.com/package/npm/xml-template-literal)
 [![Build status of main branch](https://img.shields.io/circleci/build/github/Olian04/xml-template-literal/main?label=test%20%26%20build)](https://app.circleci.com/pipelines/github/Olian04/xml-template-literal)
+[![Code percentage covered by tests on main branch](https://codecov.io/gh/Olian04/xml-template-literal/branch/main/graph/badge.svg?token=iPCuTDTD3F)](https://codecov.io/gh/Olian04/xml-template-literal)
 [![MIT licensed](https://img.shields.io/npm/l/xml-template-literal)](./LICENSE)
 
 # xml-template-literal
@@ -24,7 +25,7 @@ const ast = xml`
 
 ## Installation
 
-### NPM
+### NPM - ESM
 
 [`npm i xml-template-literal`](https://www.npmjs.com/package/xml-template-literal)
 
@@ -32,9 +33,15 @@ const ast = xml`
 import { xml } from 'xml-template-literal';
 ```
 
-### CDN
+### NPM - UMD
 
-#### ESM
+[`npm i xml-template-literal`](https://www.npmjs.com/package/xml-template-literal)
+
+```js
+const { xml } = require('xml-template-literal/legacy/umd.js');
+```
+
+### CDN - ESM
 
 ```html
 <script type="module">
@@ -42,10 +49,10 @@ import { xml } from 'xml-template-literal';
 </script>
 ```
 
-#### UMD
+#### CDN - UMD
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/xml-template-literal/dist/api.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xml-template-literal/legacy/umd.js"></script>
 <script>
   const { xml } = xmlTemplateLiteral;
 </script>

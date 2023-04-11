@@ -1,11 +1,10 @@
-import { describe, it } from 'mocha';
-import { expect } from 'chai';
+import { describe, it, expect } from 'vitest';
 
-import type { Token } from '!types/Token';
-import { tokenizer } from '!tokenizer';
-import { createConsumeStream } from '!parser/util/createConsumeStream';
-import { mergeTemplateSegments } from '!util/mergeTemplateSegments';
-import { SegmentStream } from '!types/SegmentStream';
+import type { Token } from '../../../src/types/Token';
+import { tokenizer } from '../../../src/tokenizer';
+import { createConsumeStream } from '../../../src/parser/util/createConsumeStream';
+import { mergeTemplateSegments } from '../../../src/util/mergeTemplateSegments';
+import { SegmentStream } from '../../../src/types/SegmentStream';
 
 export const t = <T>(
   staticSegments: TemplateStringsArray,
@@ -21,7 +20,7 @@ const echoTest = (input: SegmentStream<unknown>) => {
   const stream = createConsumeStream(tokenizer(input))
 
   const tokValues = [...tok].map((v: Token<any>) => v.value);
-  const streamValues = [];
+  const streamValues = [] as any[];
   while (!stream.done) {
     streamValues.push(stream.current.value);
     stream.next();

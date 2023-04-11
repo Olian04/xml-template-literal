@@ -1,8 +1,8 @@
-import { AstKind, AstRoot } from '!types/AbstractSyntaxTree';
-import type { Token } from '!types/Token';
+import type { Token } from '../types/Token.js';
+import { AstKind, AstRoot } from '../types/AbstractSyntaxTree.js';
 
-import { createConsumeStream } from '!parser/util/createConsumeStream';
-import { parseChildren } from '!parser/parseChildren';
+import { createConsumeStream } from './util/createConsumeStream.js';
+import { parseChildren } from './parseChildren.js';
 
 export const parseTokens = <T>(tokens: Generator<Token<T>>): AstRoot<T> => ({
   kind: AstKind.Root,
