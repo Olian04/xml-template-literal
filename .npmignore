@@ -1,9 +1,7 @@
 .gitignore
 .editorconfig
-.mocharc.cjs
 rollup.config.mjs
 tsconfig.json
-tsconfig.prod.json
 .vscode
 .circleci
 .trunk
