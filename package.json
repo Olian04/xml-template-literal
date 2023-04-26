@@ -1,6 +1,6 @@
 {
   "name": "xml-template-literal",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "A template literal tag function for parsing xml.",
   "type": "module",
   "sideEffects": false,
@@ -18,6 +18,8 @@
     "build": "npm run build:esm && npm run build:umd",
     "build:esm": "rimraf ./dist && tsc",
     "build:umd": "rimraf ./legacy && rollup --config",
+    "predemo:esm": "cd demos && npm i",
+    "predemo:umd": "cd demos && npm i",
     "demo:esm": "node ./demos/esm.mjs",
     "demo:umd": "node ./demos/umd.cjs",
     "upload:coverage": "codecov"

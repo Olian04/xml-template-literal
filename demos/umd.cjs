@@ -1,4 +1,4 @@
-const { xml } = require('../legacy/umd.cjs');
+const { xml } = require('xml-template-literal');
 
 const ast = xml`
   <div>Hello, ${2} World!</div>

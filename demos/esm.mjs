@@ -1,4 +1,4 @@
-import { xml } from '../dist/api.js';
+import { xml } from 'xml-template-literal';
 
 const ast = xml`
   <div>Hello, ${2} World!</div>
