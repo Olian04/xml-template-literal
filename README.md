@@ -38,7 +38,7 @@ import { xml } from 'xml-template-literal';
 [`npm i xml-template-literal`](https://www.npmjs.com/package/xml-template-literal)
 
 ```js
-const { xml } = require('xml-template-literal/legacy/umd.js');
+const { xml } = require('xml-template-literal');
 ```
 
 ### CDN - ESM
