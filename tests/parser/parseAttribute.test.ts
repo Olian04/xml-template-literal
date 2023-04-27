@@ -6,7 +6,7 @@ import { parseAttribute } from '../../src/parser/parseAttribute';
 import { createConsumeStream } from '../../src/parser/util/createConsumeStream';
 import { AstKind, AttributeType } from '../../src/types/AbstractSyntaxTree';
 
-export const t = <T>(
+const t = <T>(
   staticSegments: TemplateStringsArray,
   ...dynamicSegments: T[]
 ) =>

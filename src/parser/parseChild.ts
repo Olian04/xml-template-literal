@@ -57,7 +57,8 @@ export const parseTextChild = <T>(
   let value = '';
   while (
     tok.current.kind === TokenKind.Text ||
-    tok.current.kind === TokenKind.Whitespace
+    tok.current.kind === TokenKind.Whitespace ||
+    (tok.current.kind === TokenKind.Syntax && tok.current.value !== '</')
   ) {
     value += tok.current.value;
     nextToken(tok, false);
@@ -83,12 +84,6 @@ export const parseChild = <T>(
     };
   }
   if (
-    tok.current.kind === TokenKind.Text ||
-    tok.current.kind === TokenKind.Whitespace
-  ) {
-    return parseTextChild(tok);
-  }
-  if (
     tok.current.kind === TokenKind.Syntax &&
     tok.current.value === '<'
   ) {
@@ -96,5 +91,5 @@ export const parseChild = <T>(
     nextToken(tok, false);
     return node;
   }
-  throw new Error(`UnexpectedToken: Expected either "<", a Data token, a Text token, or a Whitespace token. But got ${tok.current.kind} token with value "${tok.current.value}"`)
+  return parseTextChild(tok);
 };

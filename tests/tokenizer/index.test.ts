@@ -2,9 +2,10 @@ import { describe, it, expect } from 'vitest';
 
 import type { Token } from '../../src/types/Token';
 import { tokenizer } from '../../src/tokenizer';
+import { tokenizeString } from '../../src/tokenizer/tokenizeString';
 import { mergeTemplateSegments } from '../../src/util/mergeTemplateSegments';
 
-export const t = <T>(
+const t = <T>(
   staticSegments: TemplateStringsArray,
   ...dynamicSegments: T[]
 ) =>
