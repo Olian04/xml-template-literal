@@ -3,11 +3,11 @@ import { describe, it, expect } from 'vitest';
 import { mergeTemplateSegments } from '../../src/util/mergeTemplateSegments';
 import { tokenizer } from '../../src/tokenizer';
 import { parseTokens } from '../../src/parser';
-import { AttributeType, ChildType, AstKind } from '../../src/types/AbstractSyntaxTree';
+import { AttributeType, ChildType, AstKind, AstRoot } from '../../src/types/AbstractSyntaxTree';
 import { UnexpectedEOF } from '../../src/errors/UnexpectedEOF';
 import { UnexpectedToken } from '../../src/errors/UnexpectedToken';
 
-export const t = <T>(
+const t = <T>(
   staticSegments: TemplateStringsArray,
   ...dynamicSegments: T[]
 ) =>
@@ -15,6 +15,10 @@ export const t = <T>(
     dynamic: dynamicSegments,
     static: [...staticSegments],
   });
+
+const assertAst = <Ast extends AstRoot<unknown>>(testAst: Ast, expectedAst: Ast) => {
+  expect(testAst).to.deep.equal(expectedAst);
+}
 
 describe('parser', () => {
   it('should return empty root when provided an empty input', () => {
@@ -47,7 +51,8 @@ describe('parser', () => {
     const ast = parseTokens(
       tokenizer(t`<someTag property="value" prop=${A}></someTag>`)
     );
-    expect(ast).to.deep.equal({
+
+    assertAst(ast, {
       kind: AstKind.Root,
       children: [
         {
@@ -77,7 +82,7 @@ describe('parser', () => {
   it('should correctly parse tag with children', () => {
     const ast = parseTokens(tokenizer(t`<div><p> </p></div>`));
 
-    expect(ast).to.deep.equal({
+    assertAst(ast, {
       kind: AstKind.Root,
       children: [
         {
@@ -105,12 +110,57 @@ describe('parser', () => {
     });
   });
 
+  it('should correctly parse attribute-syntax tokens inside child body', () => {
+    const A = 2;
+    const B = 3;
+    const C = A + B;
+    const ast = parseTokens(tokenizer(t`<div>${A} + ${B} = ${C}</div>`));
+
+    assertAst(ast, {
+      kind: AstKind.Root,
+      children: [
+        {
+          kind: AstKind.Child,
+          type: ChildType.Node,
+          tag: 'div',
+          attributes: [],
+          children: [
+            {
+              kind: AstKind.Child,
+              type: ChildType.Data,
+              value: A,
+            },
+            {
+              kind: AstKind.Child,
+              type: ChildType.Text,
+              value: ' + ',
+            },
+            {
+              kind: AstKind.Child,
+              type: ChildType.Data,
+              value: B,
+            },
+            {
+              kind: AstKind.Child,
+              type: ChildType.Text,
+              value: ' = ',
+            },
+            {
+              kind: AstKind.Child,
+              type: ChildType.Data,
+              value: C,
+            }
+          ],
+        },
+      ],
+    });
+  });
+
   it('should correctly parse composite property value', () => {
     const A = { foo: 0 };
-
     const ast = parseTokens(tokenizer(t`<div class="box ${A} lg" />`));
 
-    expect(ast).to.deep.equal({
+    assertAst(ast, {
       kind: AstKind.Root,
       children: [
         {
