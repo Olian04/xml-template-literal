@@ -7,7 +7,8 @@
   "exports": {
     "require": "./legacy/umd.cjs",
     "import": "./dist/api.js",
-    "types": "./dist/api.d.ts"
+    "types": "./dist/api.d.ts",
+    "default": "./legacy/umd.cjs"
   },
   "main": "./legacy/umd.cjs",
   "types": "./dist/api.d.ts",
