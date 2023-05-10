@@ -1,13 +1,14 @@
 {
   "name": "xml-template-literal",
-  "version": "0.4.0",
+  "version": "0.4.5",
   "description": "A template literal tag function for parsing xml.",
   "type": "module",
   "sideEffects": false,
   "exports": {
     "require": "./legacy/umd.cjs",
     "import": "./dist/api.js",
-    "types": "./dist/api.d.ts"
+    "types": "./dist/api.d.ts",
+    "default": "./dist/api.js"
   },
   "main": "./legacy/umd.cjs",
   "types": "./dist/api.d.ts",
